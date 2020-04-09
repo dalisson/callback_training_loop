@@ -1,0 +1,3 @@
+training_loop_files/*
+*.ipynb*
+*__pycache__*
