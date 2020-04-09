@@ -2,7 +2,7 @@ import re
 
 __all__ = ['Callback']
 
-class Callback():
+class Callback(object):
     '''
     Base callback class
     '''
@@ -14,9 +14,8 @@ class Callback():
         Sets the object runnig the callback
         '''
         self.run = run
-        return self
 
-    def __getattr__(self, k): 
+    def __getattr__(self, k):
         return getattr(self.run, k)
 
     @property

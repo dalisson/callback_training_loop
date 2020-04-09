@@ -62,7 +62,10 @@ class Runner():
         '''
         adds callbacks to the runner callback list
         '''
-        self.call_backs += list(map(lambda x: x.set_runner(self), listfy(call_backs)))
+        call_backs = listfy(call_backs)
+        for c_b in call_backs:
+            c_b.set_runner(self)
+        self.call_backs += call_backs
 
     def one_batch(self, i, x_b, y_b):
         '''
