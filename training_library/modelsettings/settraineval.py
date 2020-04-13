@@ -11,7 +11,7 @@ class SetTrainEvalCallback(Callback):
         '''
         self.run.model.train()
 
-    def begin_eval(self):
+    def begin_validate(self):
         '''
         sets the model to evaluation
         '''
