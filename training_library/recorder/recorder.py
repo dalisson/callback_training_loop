@@ -19,9 +19,6 @@ class RecorderCallback(Callback):
         self.records['lr'] = [[] for _ in range(n_groups)]
         self.records['loss'] = []
 
-    def get_model(self):
-        return self.model
-
     def after_loss(self):
         '''
         Register parameters after calculating loss
