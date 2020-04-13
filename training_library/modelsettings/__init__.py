@@ -1,2 +1,2 @@
 from .settraineval import SetTrainEvalCallback
-from .setoptmizer import SetOptimizerCallback
+from .setoptimizer import SetOptimizerCallback
