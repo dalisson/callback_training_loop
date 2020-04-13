@@ -1,1 +1,1 @@
-from .tocuda import CudaCallback
+from .cuda import CudaCallback
