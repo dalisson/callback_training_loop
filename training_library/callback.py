@@ -27,7 +27,7 @@ class Callback(object):
         return name
 
     def __repr__(self):
-        return self.name
+        return self.run.__repr__() + '.' + self.name
 
     def __call__(self, cb_name):
         attribute = getattr(self, cb_name, None)
