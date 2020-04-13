@@ -112,14 +112,14 @@ class Runner():
         begin fitting process
         '''
         self.epochs, self.loss = epochs, 0
-        self('begin_fit')
+        return self('begin_fit')
 
     def begin_epoch(self, current_epoch):
         '''
         begin epoch
         '''
         self.epoch = current_epoch
-        self('begin_epoch')
+        return self('begin_epoch')
 
     def fit(self, epochs, additional_cbs):
         '''
@@ -147,6 +147,7 @@ class Runner():
     def __call__(self, cb_name):
         for call_back in sorted(self.call_backs, key=lambda x: x.order):
             if hasattr(call_back, cb_name):
-                if not call_back(cb_name):
+                res = call_back(cb_name)
+                if not res and res is not None:
                     return False
         return True
