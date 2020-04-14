@@ -5,7 +5,8 @@ class SetTrainEvalCallback(Callback):
     '''
     Alternate the model between training and evaluation
     '''
-    def begin_fit(self):
+    order = 0
+    def begin_epoch(self):
         '''
         sets the model to training
         '''

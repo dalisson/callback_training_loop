@@ -3,6 +3,7 @@ from ..imports import plt
 
 
 class RecorderCallback(Callback):
+    order = 3
     '''
     Records values along the iteractions
     '''

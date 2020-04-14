@@ -5,6 +5,7 @@ class SetOptimizerCallback(Callback):
     '''
     sets the optimizer
     '''
+    order = 1
     def __init__(self, **kwargs):
         super(SetOptimizerCallback, self).__init__()
         self.kwargs = kwargs

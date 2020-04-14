@@ -110,9 +110,9 @@ class Runner():
             self.add_callbacks(additional_cbs)
         try:
             self.begin_fit(epochs)
-            self.in_train = True
             for epoch in range(epochs):
                 if self.begin_epoch(epoch):
+                    self.in_train = True
                     self.all_batches(self.data.train_dl)
                 with torch.no_grad():
                     if self('begin_validate'):

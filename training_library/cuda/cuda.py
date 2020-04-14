@@ -4,6 +4,7 @@ class CudaCallback(Callback):
     '''
     A callback to train on GPU
     '''
+    order = 0
     def __init__(self, device=0):
         super(CudaCallback, self).__init__()
         self.device = device
