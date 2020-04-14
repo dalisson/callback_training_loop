@@ -32,10 +32,10 @@ class RecorderCallback(Callback):
         '''
         Plots the learning of given param_group
         '''
-        plt.plot(self.record_parameters['lr'][param_group_id])
+        plt.plot(self.records['lr'][param_group_id])
 
     def plot_loss(self):
         '''
         plots the loss along iterations
         '''
-        plt.plot(self.recorded_parameters['loss'])
+        plt.plot(self.records['loss'])

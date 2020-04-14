@@ -4,24 +4,10 @@ Base class for running the fully customizable training loop
 '''
 from ..imports import *
 from ..exceptions import * 
-
+from ..utils import listfy
 __all__ = ['Runner']
 __author__ = 'Dalisson Figueiredo'
 
-
-
-
-def listfy(obj_to_list):
-    '''
-    returns a list of itens
-    '''
-    res = []
-    for element in obj_to_list:
-        if not isinstance(element, list):
-            res += [element]
-        else:
-            res += listfy(element)
-    return res
 
 class Runner():
     '''

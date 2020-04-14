@@ -23,7 +23,7 @@ class Callback(object):
         '''
         sets the name of the callback
         '''
-        name = re.sub(r'Callback$', '', self.__class__.__name__)
+        name = re.sub(r'Callback$', '', self.__class__.__name__).lower()
         return name
     
     def begin_fit(self):

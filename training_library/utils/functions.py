@@ -1,7 +1,7 @@
 from typing import Union
 from ..imports import nn, torch
 
-__all__ = ['discriminative_lr_optimizer']
+__all__ = ['discriminative_lr_optimizer', 'listfy']
 
 def discriminative_lr_optimizer(network: Union[nn.Module, list], lr: Union[float, list], optimizer: torch.optim, **kwargs):
     '''
@@ -42,3 +42,16 @@ def discriminative_lr_optimizer(network: Union[nn.Module, list], lr: Union[float
     param_list = [dict(params=c.parameters(), lr=lr, **kwargs) for c, lr\
          in zip(model_children, lrs)]
     return optimizer(param_list)
+
+
+def listfy(obj_to_list):
+    '''
+    returns a list of itens
+    '''
+    res = []
+    for element in obj_to_list:
+        if not isinstance(element, list):
+            res += [element]
+        else:
+            res += listfy(element)
+    return res
