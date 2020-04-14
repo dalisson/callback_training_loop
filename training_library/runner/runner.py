@@ -58,7 +58,7 @@ class Runner():
             self.iter = i
             self.x_batch, self.y_batch = x_b, y_b
             self('begin_batch')
-            self.y_hat = self.model(x_b)
+            self.y_hat = self.model(self.x_batch)
             self('after_pred')
             self.loss = self.loss_func(self.y_hat, self.y_batch)
             self('after_loss')

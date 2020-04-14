@@ -13,11 +13,11 @@ class CudaCallback(Callback):
         '''
         sends the model to gpu
         '''
-        self.run.model.to(self.device)
+        self.model.to(self.device)
 
     def begin_batch(self):
         '''
         Sends the batches to gpu
         '''
-        self.run.x_batch.to(self.device)
-        self.run.y_batch.to(self.device)
+        self.x_batch.to(self.device)
+        self.y_batch.to(self.device)
