@@ -29,9 +29,9 @@ class Runner():
 
     '''
 
-    def __init__(self, model, data, loss_func, optim, l_r, cbs=None):
+    def __init__(self, model, data, loss_func, optim, lr, cbs=None):
         self.model, self.data, self.loss_func = model, data, loss_func
-        self.optim, self.l_r = optim, l_r
+        self.optim, self.lr = optim, lr
         self.y_hat, self.x_batch, self.y_batch, self.loss = None, None, None, None
         self.epoch, self.epochs = 0, 0
         self.call_backs = []
@@ -128,6 +128,7 @@ class Runner():
     def __call__(self, cb_name):
         for call_back in sorted(self.call_backs, key=lambda x: x.order):
             if hasattr(call_back, cb_name):
+                print(call_back)
                 res = call_back(cb_name)
                 if not res and res is not None:
                     return False

@@ -18,6 +18,16 @@ class Callback(object):
     def __getattr__(self, k):
         return getattr(self.run, k)
 
+    def begin_fit(self):
+        '''
+        beginning fit process
+        '''
+
+    def begin_epoch(self):
+        '''
+        beginning an epoch process
+        '''
+
     @property
     def name(self):
         '''
