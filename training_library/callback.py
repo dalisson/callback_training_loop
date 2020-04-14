@@ -18,6 +18,14 @@ class Callback(object):
     def __getattr__(self, k):
         return getattr(self.run, k)
 
+    @property
+    def name(self):
+        '''
+        sets the name of the callback
+        '''
+        name = re.sub(r'Callback$', '', self.__class__.__name__)
+        return name
+    
     def begin_fit(self):
         '''
         beginning fit process
@@ -27,15 +35,6 @@ class Callback(object):
         '''
         beginning an epoch process
         '''
-
-    @property
-    def name(self):
-        '''
-        sets the name of the callback
-        '''
-        name = re.sub(r'Callback$', '', self.__class__.__name__)
-        return name
-
     def __repr__(self):
         return self.run.model.__class__.__name__ + '.' + self.name
 
