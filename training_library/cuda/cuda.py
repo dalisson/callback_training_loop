@@ -1,4 +1,3 @@
-from ..imports import *
 from ..callback import Callback
 
 class CudaCallback(Callback):
