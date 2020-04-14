@@ -2,9 +2,10 @@
 Base class for running the fully customizable training loop
 
 '''
-from ..imports import *
-from ..exceptions import * 
+from ..imports import torch
+from ..exceptions import CancelAllBatchesException, CancelBatchException, CancelTrainException
 from ..utils import listfy
+
 __all__ = ['Runner']
 __author__ = 'Dalisson Figueiredo'
 
