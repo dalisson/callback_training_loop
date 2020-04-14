@@ -11,20 +11,49 @@ __all__ = ['build_standard_runner']
 STANDARD_CALLBACK_LIST = [CudaCallback(), RecorderCallback(), SetTrainEvalCallback(),
                           SetTrainableModulesCallback(), SetOptimizerCallback()]
 
-def build_standard_runner(model, data, loss_func, optim='SGD', min_lr=1e-2, max_lr=None):
-    if optim.lower() == 'sgd':
-        optimizer = SGD
-    elif optim.lower() == 'adam':
-        optimizer = Adam
+class Learner(Runner):
 
-    if max_lr:
-        pass
+    @property
+    def device(self):
+        '''
+        The device running the learner
+        '''
+        attr = getattr(self, 'cuda')
+        return attr.device
 
-    return Runner(model, data, loss_func, optimizer, min_lr, cbs=STANDARD_CALLBACK_LIST)
+    @device.setter
+    def device(self, new_device):
+        self.device = new_device
+        attr = getattr(self, 'cuda')
+        attr.device = self.device
 
+    @classmethod
+    def build_standard_runner(cls, model, data, loss_func, optim='SGD', min_lr=1e-2, max_lr=None):
+        '''
+            Build a runner using standard callbacks
+        '''
+        if optim.lower() == 'sgd':
+            optimizer = SGD
+        elif optim.lower() == 'adam':
+            optimizer = Adam
 
-def lr_find(runner):
+        if max_lr:
+            pass
 
-    runner.fit(2, additional_cbs=[LR_Find()])
+        return cls(model, data, loss_func, optimizer, min_lr, cbs=STANDARD_CALLBACK_LIST)
 
-    return runner.recorder.records['lr']
+    def lr_find(self):
+        '''
+        Finds the best learning rate for model
+
+        '''
+        state_dict = self.model.state_dict()
+
+        self.fit(2, additional_cbs=[LR_Find()])
+        # o  state dict deve voltar ao original
+        self.model.load_state_dict(state_dict)
+
+        attr = getattr(self, 'recorder')
+        if not attr:
+            return 'recorder not found'
+        return attr.records['lr']
