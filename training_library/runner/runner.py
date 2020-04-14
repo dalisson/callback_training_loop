@@ -128,7 +128,6 @@ class Runner():
     def __call__(self, cb_name):
         for call_back in sorted(self.call_backs, key=lambda x: x.order):
             if hasattr(call_back, cb_name):
-                print(call_back)
                 res = call_back(cb_name)
                 if not res and res is not None:
                     return False
