@@ -16,7 +16,7 @@ class LR_Find(Callback):
         for pg in self.optim.param_groups:
             pg['lr'] = lr
 
-    def after_step(self):
+    def after_optim_step(self):
         if self.n_iter >= self.max_iter or self.loss > self.best_loss*10:
             raise CancelTrainException()
         if self.loss < self.best_loss:
