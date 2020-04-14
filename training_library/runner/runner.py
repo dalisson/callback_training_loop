@@ -102,7 +102,7 @@ class Runner():
         self.epoch = current_epoch
         return self('begin_epoch')
 
-    def fit(self, epochs, additional_cbs):
+    def fit(self, epochs, additional_cbs=None):
         '''
         Does the fitting process
         '''
