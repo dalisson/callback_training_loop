@@ -19,5 +19,5 @@ class CudaCallback(Callback):
         '''
         Sends the batches to gpu
         '''
-        self.x_batch.to(self.device)
-        self.y_batch.to(self.device)
+        self.run.x_batch.to(self.device)
+        self.run.y_batch.to(self.device)
