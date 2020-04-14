@@ -34,6 +34,7 @@ class Runner():
         self.optim, self.lr = optim, lr
         self.y_hat, self.x_batch, self.y_batch, self.loss = None, None, None, None
         self.epoch, self.epochs = 0, 0
+        self.trainable_modules = [self.model]
         self.call_backs = []
         self.add_callbacks(cbs)
         self.iter = 0
