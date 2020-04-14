@@ -1,5 +1,5 @@
 from ..callback import Callback
-from ..utils import discriminative_lr_optimizer
+from ..callbackutils import discriminative_lr_optimizer
 
 class SetOptimizerCallback(Callback):
     '''
