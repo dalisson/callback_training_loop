@@ -52,6 +52,7 @@ class Learner(Runner):
         # o  state dict deve voltar ao original
         self.model.load_state_dict(state_dict)
 
+        self.remove_callback('lr_find')
         attr = getattr(self, 'recorder')
         if not attr:
             return 'recorder not found'
