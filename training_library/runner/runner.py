@@ -27,6 +27,7 @@ class Runner():
         self.call_backs = []
         self.add_callbacks(cbs)
         self.iter = 0
+        self.total_iter = 0
         self.in_train = True
 
         self('init_config')
@@ -92,6 +93,7 @@ class Runner():
         begin fitting process
         '''
         self.epochs, self.loss = epochs, 0
+        self.total_iter = len(self.data.train_dl) * epochs
         return self('begin_fit')
 
     def begin_epoch(self, current_epoch):
