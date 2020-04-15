@@ -1,1 +1,1 @@
-from .library import Learner
+from .learner import Learner
