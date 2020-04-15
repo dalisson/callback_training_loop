@@ -10,7 +10,7 @@ class SetOptimizerCallback(Callback):
         super(SetOptimizerCallback, self).__init__()
         self.kwargs = kwargs
 
-    def initial_config(self):
+    def init_config(self):
         '''
         sets up the optimizer to the model parameters,
         additionaly if the loss function has trainable parameters

@@ -29,7 +29,7 @@ class Runner():
         self.iter = 0
         self.in_train = True
 
-        self('initial_config')
+        self('init_config')
 
     def add_callbacks(self, call_backs):
         '''
