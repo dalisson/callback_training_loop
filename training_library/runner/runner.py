@@ -40,6 +40,13 @@ class Runner():
             setattr(self, c_b.name, c_b)
         self.call_backs += call_backs
 
+    def remove_callback(self, cb_name):
+        delattr(self, cb_name)
+        for  cb in self.call_backs:
+            if cb_name == cb.name:
+                del cb
+
+
     def one_batch(self, x_b, y_b):
         '''
         Does batch of training loop
