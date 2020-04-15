@@ -38,13 +38,13 @@ class Runner():
             setattr(self, c_b.name, c_b)
         self.call_backs += call_backs
 
-    def one_batch(self, i, x_b, y_b):
+    def one_batch(self, x_b, y_b):
         '''
         Does batch of training loop
 
         '''
         try:
-            self.iter = i
+            self.iter += 1
             self.x_batch, self.y_batch = x_b, y_b
             self('begin_batch')
             self.y_hat = self.model(self.x_batch)
@@ -69,8 +69,8 @@ class Runner():
         Does all batches in training loop
         '''
         try:
-            for i, (x_batch, y_batch) in enumerate(data):
-                self.one_batch(i, x_batch, y_batch)
+            for x_batch, y_batch in data:
+                self.one_batch(x_batch, y_batch)
                 self('after_all_batches')
         except CancelAllBatchesException:
             self('cancel_all_batches')
