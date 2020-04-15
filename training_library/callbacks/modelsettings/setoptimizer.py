@@ -17,4 +17,5 @@ class SetOptimizerCallback(Callback):
         these a sent to optimizizer as well
         '''
         self.run.optim = discriminative_lr_optimizer(self.run.trainable_modules, self.run.lr,
-                                                     self.run.optim, **self.kwargs)
+                                                     self.run.optim_class, **self.kwargs)
+        self.run.n_param_groups = len(self.run.optim.param_groups())

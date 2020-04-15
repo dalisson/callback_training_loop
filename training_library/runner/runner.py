@@ -19,7 +19,9 @@ class Runner():
 
     def __init__(self, model, data, loss_func, optim, lr, cbs=None):
         self.model, self.data, self.loss_func = model, data, loss_func
-        self.optim, self.lr = optim, lr
+        self.n_param_groups = 0
+        self.optim_class = optim
+        self.optim, self.lr = None, lr
         self.y_hat, self.x_batch, self.y_batch, self.loss = None, None, None, None
         self.epoch, self.epochs = 0, 0
         self.trainable_modules = [self.model]
