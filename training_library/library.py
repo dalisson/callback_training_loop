@@ -23,9 +23,8 @@ class Learner(Runner):
 
     @device.setter
     def device(self, new_device):
-        self.device = new_device
         attr = getattr(self, 'cuda')
-        attr.device = self.device
+        attr.device = new_device
 
     @classmethod
     def build_standard_runner(cls, model, data, loss_func, optim='SGD', min_lr=1e-2, max_lr=None):
