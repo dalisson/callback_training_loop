@@ -61,6 +61,6 @@ class Learner(Runner):
         lrs = attr.records['lr'][-1]
         loss = attr.records['loss']
         n = len(loss)-skip_last
-        plt.xscale('log')
         plt.plot(lrs[:n], loss[:n])
+        plt.xscale('log')
         

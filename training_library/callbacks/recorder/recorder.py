@@ -24,7 +24,7 @@ class RecorderCallback(Callback):
         '''
         Register parameters after calculating loss
         '''
-        self.records['loss'].append(self.run.loss)
+        self.records['loss'].append(self.run.loss.detach().cpu().numpy().item())
         for i, param_group in enumerate(self.optim.param_groups):
             self.records['lr'][i].append(param_group['lr'])
 

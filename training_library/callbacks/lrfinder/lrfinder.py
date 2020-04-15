@@ -23,4 +23,7 @@ class LR_Find(Callback):
             self.best_loss = self.loss
 
     def after_fit(self):
+        '''
+        after fit the iteractions go back to zero
+        '''
         self.run.iter = 0
