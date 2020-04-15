@@ -4,7 +4,9 @@ from .callbacks.lrfinder import LR_Find
 from .callbacks.recorder import RecorderCallback
 from .callbacks.modelsettings import SetTrainableModulesCallback,\
                                      SetOptimizerCallback, SetTrainEvalCallback
+from .callbacks.imports import plt
 from .runner import Runner
+
 
 __all__ = ['Learner']
 
@@ -41,7 +43,7 @@ class Learner(Runner):
 
         return cls(model, data, loss_func, optimizer, min_lr, cbs=STANDARD_CALLBACK_LIST)
 
-    def lr_find(self):
+    def lr_find(self, skip_last=5):
         '''
         Finds the best learning rate for model
 
@@ -56,4 +58,10 @@ class Learner(Runner):
         attr = getattr(self, 'recorder')
         if not attr:
             return 'recorder not found'
-        return attr.records['lr']
+        
+        lrs = attr.records['lr'][-1]
+        loss = attr.records['loss']
+        n = len(loss)-skip_last
+        plt.xscale('log')
+        plt.plot(lrs[:n], loss[:n])
+        
