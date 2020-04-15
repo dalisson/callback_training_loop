@@ -21,3 +21,6 @@ class LR_Find(Callback):
             raise CancelTrainException()
         if self.loss < self.best_loss:
             self.best_loss = self.loss
+
+    def after_fit(self):
+        self.run.iter = 0

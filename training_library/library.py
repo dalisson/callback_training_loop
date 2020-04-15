@@ -58,7 +58,6 @@ class Learner(Runner):
         attr = getattr(self, 'recorder')
         if not attr:
             return 'recorder not found'
-        
         lrs = attr.records['lr'][-1]
         loss = attr.records['loss']
         n = len(loss)-skip_last
