@@ -6,7 +6,7 @@ from .callbacks.modelsettings import SetTrainableModulesCallback,\
                                      SetOptimizerCallback, SetTrainEvalCallback
 from .runner import Runner
 
-__all__ = ['build_standard_runner']
+__all__ = ['Learner']
 
 STANDARD_CALLBACK_LIST = [CudaCallback(), RecorderCallback(), SetTrainEvalCallback(),
                           SetTrainableModulesCallback(), SetOptimizerCallback()]
