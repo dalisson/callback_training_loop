@@ -48,11 +48,15 @@ class Learner(Runner):
         Finds the best learning rate for model
 
         '''
-        state_dict = self.model.state_dict()
+        state_dicts = []
+        state_dicts.extend([self.model.state_dict(), self.optim.state_dict()])
+        if hasattr(self.loss_func, 'parameters'):
+            state_dicts.append(self.loss_func.state_dict())
 
         self.fit(2, additional_cbs=[LR_Find()])
         # o  state dict deve voltar ao original
-        self.model.load_state_dict(state_dict)
+        for component, s_dict in zip([self.model, self.optim, self.loss_func], state_dicts):
+            component.load_state_dict(s_dict)
 
         self.remove_callback('lr_find')
         attr = getattr(self, 'recorder')
