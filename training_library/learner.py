@@ -7,13 +7,15 @@ from .callbacks.modelsettings import SetTrainableModulesCallback,\
 from .callbacks.imports import plt, partial
 from .callbacks.scheduler import ParamScheduler
 from .callbacks.scheduler import sched_lin, sched_cos, sched_no, sched_exp, combine_scheds
+from .callbacks.progress import ProgressbarCallback
 from .runner import Runner
 
 
 __all__ = ['Learner']
 
 STANDARD_CALLBACK_LIST = [CudaCallback(), RecorderCallback(), SetTrainEvalCallback(),
-                          SetTrainableModulesCallback(), SetOptimizerCallback()]
+                          SetTrainableModulesCallback(), SetOptimizerCallback(),
+                          ProgressbarCallback()]
 
 class Learner(Runner):
 
