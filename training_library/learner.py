@@ -70,16 +70,16 @@ class Learner(Runner):
         plt.plot(lrs[:n], loss[:n])
         plt.xscale('log')
 
-    def fit_one_cyle(self, n_epochs, max_lr):
+    def fit_one_cycle(self, n_epochs, max_lr):
 
         lrs = [group['lr'] for group in self.optim.param_groups]
 
         sched_funcs = []
         for base_lr in lrs:
-            func = combine_scheds([0,3, 0.7], [sched_cos(base_lr, max_lr), sched_cos(max_lr, base_lr*1e-1)])
+            func = combine_scheds([0.3, 0.7], [sched_cos(base_lr, max_lr), sched_cos(max_lr, base_lr*1e-1)])
             sched_funcs.append(func)
 
         sched_callback = partial(ParamScheduler, 'lr', sched_funcs)
 
         self.remove_callback('paramscheduler')
-        super.fit(epochs=n_epochs, additional_cbs=sched_callback)
+        super().fit(epochs=n_epochs, additional_cbs=sched_callback)

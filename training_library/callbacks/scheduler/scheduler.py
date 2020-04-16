@@ -18,6 +18,5 @@ class ParamScheduler(Callback):
         for pg, func in zip(self.optim.param_groups, self.sched_func):
             pg[self.pname] = func(self.iter/self.total_iter)
 
-    def begin_batch(self): 
+    def begin_batch(self):
         if self.in_train: self.set_param()
-
