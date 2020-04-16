@@ -4,7 +4,9 @@ from .callbacks.lrfinder import LR_Find
 from .callbacks.recorder import RecorderCallback
 from .callbacks.modelsettings import SetTrainableModulesCallback,\
                                      SetOptimizerCallback, SetTrainEvalCallback
-from .callbacks.imports import plt
+from .callbacks.imports import plt, partial
+from .callbacks.scheduler import ParamScheduler
+from .callbacks.scheduler import sched_lin, sched_cos, sched_no, sched_exp, combine_scheds
 from .runner import Runner
 
 
@@ -67,4 +69,17 @@ class Learner(Runner):
         n = len(loss)-skip_last
         plt.plot(lrs[:n], loss[:n])
         plt.xscale('log')
-        
+
+    def fit_one_cyle(self, n_epochs, max_lr):
+
+        lrs = [group['lr'] for group in self.optim.param_groups]
+
+        sched_funcs = []
+        for base_lr in lrs:
+            func = combine_scheds([0,3, 0.7], [sched_cos(base_lr, max_lr), sched_cos(max_lr, base_lr*1e-1)])
+            sched_funcs.append(func)
+
+        sched_callback = partial(ParamScheduler, 'lr', sched_funcs)
+
+        self.remove_callback('paramscheduler')
+        super.fit(epochs=n_epochs, additional_cbs=sched_callback)

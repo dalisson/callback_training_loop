@@ -2,7 +2,7 @@ from ..imports import torch
 from functools import partial
 import math
 
-__all__ = ['sched_lin', 'sched_cos', 'sched_no', 'sched_exp']
+__all__ = ['sched_lin', 'sched_cos', 'sched_no', 'sched_exp', 'combine_sched']
 
 def annealer(f):
     def _inner(start, end): return partial(f, start, end)

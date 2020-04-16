@@ -43,10 +43,9 @@ class Runner():
         self.call_backs += call_backs
 
     def remove_callback(self, cb_name):
-        delattr(self, cb_name)
-        for  cb in self.call_backs:
-            if cb_name == cb.name:
-                del cb
+        if hasattr(cb_name):
+            delattr(self, cb_name)
+            self.call_backs = [ cb for cb in self.call_backs if cb.name != cb_name]
 
 
     def one_batch(self, x_b, y_b):
