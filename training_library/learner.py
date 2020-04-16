@@ -99,7 +99,7 @@ class Learner(Runner):
         super().fit(epochs=n_epochs, additional_cbs=sched_callback)
 
     def fit_exp(self, n_epochs, gamma = 0.9):
-        
+
         lrs = self.learning_rate
         sched_funcs = []
         for lr in lrs:
