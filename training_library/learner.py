@@ -97,3 +97,12 @@ class Learner(Runner):
         sched_callback = ParamScheduler(pname='lr', sched_func=sched_funcs)
         self.remove_callback('paramscheduler')
         super().fit(epochs=n_epochs, additional_cbs=sched_callback)
+
+    def fit_exp(self, n_epochs, gamma = 0.9):
+        
+        lrs = self.learning_rate
+        sched_funcs = []
+        for lr in lrs:
+            sched_funcs.append(sched_exp(lr, lr*(gamma**n_epochs)))
+        self.remove_callback('paramscheduler')
+        super().fit(epochs=n_epochs, additional_cbs=ParamScheduler(pname='lr', sched_func=sched_funcs))
