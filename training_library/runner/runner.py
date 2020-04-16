@@ -23,6 +23,7 @@ class Runner():
         self.n_param_groups = 0
         self.y_hat, self.x_batch, self.y_batch, self.loss = None, None, None, None
         self.epoch, self.epochs = 0, 0
+        self.dl = None
         self.trainable_modules = [self.model]
         self.call_backs = []
         self.add_callbacks(cbs)
@@ -54,7 +55,6 @@ class Runner():
 
         '''
         try:
-            self.iter += 1
             self.x_batch, self.y_batch = x_b, y_b
             self('begin_batch')
             self.y_hat = self.model(self.x_batch)
@@ -69,17 +69,18 @@ class Runner():
             self.optim.step()
             self('after_optim_step')
             self.optim.zero_grad()
+            self.iter += 1
         except CancelBatchException:
             self('cancel_batch')
         finally:
             self('after_batch')
 
-    def all_batches(self, data):
+    def all_batches(self):
         '''
         Does all batches in training loop
         '''
         try:
-            for x_batch, y_batch in data:
+            for x_batch, y_batch in self.dl:
                 self.one_batch(x_batch, y_batch)
                 self('after_all_batches')
         except CancelAllBatchesException:
@@ -113,11 +114,13 @@ class Runner():
             for epoch in range(epochs):
                 if self.begin_epoch(epoch):
                     self.in_train = True
-                    self.all_batches(data=self.data.train_dl)
+                    self.dl = self.data.train_dl
+                    self.all_batches()
                 with torch.no_grad():
                     if self('begin_validate'):
                         self.in_train = False
-                        self.all_batches(data=self.data.valid_dl)
+                        self.dl = self.data.valid_dl
+                        self.all_batches()
                 self('after_epoch')
         except CancelTrainException:
             self('after_cancel_train')

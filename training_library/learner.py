@@ -79,7 +79,6 @@ class Learner(Runner):
             func = combine_scheds([0.3, 0.7], [sched_cos(base_lr, max_lr), sched_cos(max_lr, base_lr*1e-1)])
             sched_funcs.append(func)
 
-        sched_callback = partial(ParamScheduler, 'lr', sched_funcs)
-
+        sched_callback = ParamScheduler(pname='lr', sched_func=sched_funcs)
         self.remove_callback('paramscheduler')
         super().fit(epochs=n_epochs, additional_cbs=sched_callback)
