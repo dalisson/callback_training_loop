@@ -101,6 +101,7 @@ class Runner():
         begin epoch
         '''
         self.epoch = current_epoch
+        self.dl = self.data.train_dl
         return self('begin_epoch')
 
     def fit(self, epochs, additional_cbs=None):
@@ -114,7 +115,6 @@ class Runner():
             for epoch in range(epochs):
                 if self.begin_epoch(epoch):
                     self.in_train = True
-                    self.dl = self.data.train_dl
                     self.all_batches()
                 with torch.no_grad():
                     if self('begin_validate'):
