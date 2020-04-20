@@ -8,6 +8,9 @@ from .callbacks.imports import plt, partial
 from .callbacks.scheduler import ParamScheduler
 from .callbacks.scheduler import sched_lin, sched_cos, sched_no, sched_exp, combine_scheds
 from .callbacks.progress import ProgressbarCallback
+from .callbacks.splitloss import SplitLossCallback
+from .callbacks.wandbcallback import WandbCallback
+from .callbacks.ignitecallback import IgniteCallback
 from .runner import Runner
 
 
@@ -15,7 +18,7 @@ __all__ = ['Learner']
 
 STANDARD_CALLBACK_LIST = [CudaCallback(), RecorderCallback(), SetTrainEvalCallback(),
                           SetTrainableModulesCallback(), SetOptimizerCallback(),
-                          ProgressbarCallback()]
+                          ProgressbarCallback(), SplitLossCallback(), IgniteCallback()]
 
 class Learner(Runner):
 
@@ -88,10 +91,11 @@ class Learner(Runner):
     def fit_one_cycle(self, n_epochs, max_lr):
 
         lrs = [group['lr'] for group in self.optim.param_groups]
-
+        if not isinstance(max_lr, list):
+            max_lr = [max_lr] * self.n_param_groups
         sched_funcs = []
-        for base_lr in lrs:
-            func = combine_scheds([0.3, 0.7], [sched_cos(base_lr, max_lr), sched_cos(max_lr, base_lr*1e-1)])
+        for base_lr, m_lr in zip(lrs, max_lr):
+            func = combine_scheds([0.3, 0.7], [sched_cos(base_lr, m_lr), sched_cos(m_lr, base_lr*1e-1)])
             sched_funcs.append(func)
 
         sched_callback = ParamScheduler(pname='lr', sched_func=sched_funcs)
@@ -105,4 +109,15 @@ class Learner(Runner):
         for lr in lrs:
             sched_funcs.append(sched_exp(lr, lr*(gamma**n_epochs)))
         self.remove_callback('paramscheduler')
-        super().fit(epochs=n_epochs, additional_cbs=ParamScheduler(pname='lr', sched_func=sched_funcs))
+        super().fit(epochs=n_epochs,
+                    additional_cbs=ParamScheduler(pname='lr', sched_func=sched_funcs))
+
+    def add_wandb(self, configs, project, name, entity='minds'):
+        '''
+        Add callback to monitor project on wandb
+        '''
+        wandbc_b = WandbCallback(configs=configs,
+                                 wandb_project=project,
+                                 wandb_name=name,
+                                 entity=entity)
+        self.add_callbacks([wandbc_b])

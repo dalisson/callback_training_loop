@@ -27,7 +27,7 @@ class IgniteCallback(Callback):
             self.run.metrics = None
             return
         for metric in self.metrics:
-            metric.update((self.run.output, self.run.y))
+            metric.update((self.run.y_hat, self.run.y))
 
     def after_all_batches(self):
         for metric in self.metrics:
