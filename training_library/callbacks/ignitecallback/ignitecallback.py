@@ -8,7 +8,6 @@ class IgniteCallback(Callback):
         super(IgniteCallback, self).__init__()
         self.metrics_classes = [Accuracy(), Recall(), Precision()]
         self.metric = None
-        self.base_name = 'train_'
 
     def begin_fit(self):
         for key in self.run.metrics.keys():
