@@ -13,7 +13,6 @@ class WandbCallback(Callback):
         self.wandb_project = wandb_project
         self.wandb_name = wandb_name
         self.entity = entity
-        self.config = None
         self.stage = 'train'
 
     def begin_fit(self):
@@ -21,7 +20,6 @@ class WandbCallback(Callback):
         config = wandb.config 
         for k, v in self.configs.items():
             setattr(config, k, v)
-        self.config = config
         wandb.watch(self.run.model, log='all')
 
     def begin_epoch(self):
