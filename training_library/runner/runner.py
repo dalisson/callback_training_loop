@@ -23,6 +23,7 @@ class Runner():
         self.n_param_groups = 0
         self.y_hat, self.x_batch, self.y_batch, self.loss = None, None, None, None
         self.epoch, self.epochs = 0, 0
+        self.metrics = None
         self.dl = None
         self.trainable_modules = [self.model]
         self.call_backs = []
