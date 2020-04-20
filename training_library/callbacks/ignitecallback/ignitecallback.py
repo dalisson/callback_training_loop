@@ -14,21 +14,15 @@ class IgniteCallback(Callback):
             for metric in self.metrics_classes:
                 self.run.metrics[key][metric.__class__.__name__] = []
 
-    def begin_epoch(self):
-        self.reset()
-        self.metric = self.run.metrics['train']
-
-    def begin_eval(self):
-        self.reset()
-        self.metric = self.run.metrics['eval']
-
     def after_loss(self):
         for metric in self.metrics_classes:
             metric.update((self.run.y_hat, self.run.y_batch))
 
     def after_all_batches(self):
+        stage = 'train' if self.run.in_train else 'eval'
         for metric in self.metrics_classes:
-            self.metric[metric.__class__.__name__].append(metric.compute())
+            self.run.metrics[stage][metric.__class__.__name__].append(metric.compute())
+        self.reset()
 
     def reset(self):
         for metric in self.metrics_classes:
