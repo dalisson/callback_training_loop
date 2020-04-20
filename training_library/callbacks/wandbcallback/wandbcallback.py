@@ -27,5 +27,5 @@ class WandbCallback(Callback):
     def begin_validate(self):
         self.metrics = self.run.eval_metrics
 
-    def after_batch(self):
+    def after_all_batches(self):
         wandb.log(self.metrics)
