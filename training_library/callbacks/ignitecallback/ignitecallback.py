@@ -24,7 +24,7 @@ class IgniteCallback(Callback):
 
     def after_loss(self):
         for metric in self.metrics_classes:
-            metric.update((self.run.y_hat, self.run.y))
+            metric.update((self.run.y_hat, self.run.y_batch))
 
     def after_all_batches(self):
         for metric in self.metrics_classes:
