@@ -58,7 +58,7 @@ class Learner(Runner):
             STANDARD_CALLBACK_LIST.append(SetOptimizerCallback(momentum=9e-1, weight_decay=5e-4))
         elif optim.lower() == 'adam':
             optimizer = Adam
-
+            STANDARD_CALLBACK_LIST.append(SetOptimizerCallback())
         if max_lr:
             pass
 
