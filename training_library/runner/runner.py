@@ -84,7 +84,6 @@ class Runner():
         try:
             for x_batch, y_batch in self.dl:
                 self.one_batch(x_batch, y_batch)
-                self('after_all_batches')
         except CancelAllBatchesException:
             self('cancel_all_batches')
         finally:
