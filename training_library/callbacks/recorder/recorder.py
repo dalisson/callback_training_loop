@@ -39,3 +39,10 @@ class RecorderCallback(Callback):
         plots the loss along iterations
         '''
         plt.plot(self.records['loss'])
+
+    def plot_lr_find(self, skip_last=5):
+        n = len(self.records['loss'])-skip_last
+        plt.plot(self.records['lr'][-1][:n], self.records['loss'][:n])
+        plt.xscale('log')
+        self.begin_fit()
+        

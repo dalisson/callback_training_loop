@@ -74,7 +74,7 @@ class Learner(Runner):
         if hasattr(self.loss_func, 'parameters'):
             state_dicts.append(self.loss_func.state_dict())
 
-        self.fit(2, additional_cbs=[LR_Find()])
+        self.fit(1, additional_cbs=[LR_Find()])
         # o  state dict deve voltar ao original
         for component, s_dict in zip([self.model, self.optim, self.loss_func], state_dicts):
             component.load_state_dict(s_dict)
@@ -83,11 +83,8 @@ class Learner(Runner):
         attr = getattr(self, 'recorder')
         if not attr:
             return 'recorder not found'
-        lrs = attr.records['lr'][-1]
-        loss = attr.records['loss']
-        n = len(loss)-skip_last
-        plt.plot(lrs[:n], loss[:n])
-        plt.xscale('log')
+        attr.plot_lr_find()
+        
 
     def fit_one_cycle(self, n_epochs, max_lr):
 
