@@ -6,34 +6,31 @@ class IgniteCallback(Callback):
 
     def __init__(self):
         super(IgniteCallback, self).__init__()
-        self.metrics = [Accuracy(), Recall(), Precision()]
-        self.train_metrics = dict()
-        self.eval_metrics = dict()
+        self.metrics_classes = [Accuracy(), Recall(), Precision()]
         self.metric = None
         self.base_name = 'train_'
 
+    def begin_fit(self):
+        for key in self.run.metrics.keys():
+            for metric in self.metrics_classes:
+                self.run.metrics[key][metric.__class__.__name__] = []
+
     def begin_epoch(self):
         self.reset()
-        self.metric = self.train_metrics
-        self.base_name = 'train_'
+        self.metric = self.run.metrics['train']
 
     def begin_eval(self):
         self.reset()
-        self.metric = self.eval_metrics
-        self.base_name = 'eval_'
+        self.metric = self.run.metrics['eval']
 
     def after_loss(self):
-        if not self.run.output:
-            self.run.metrics = None
-            return
-        for metric in self.metrics:
+        for metric in self.metrics_classes:
             metric.update((self.run.y_hat, self.run.y))
 
     def after_all_batches(self):
-        for metric in self.metrics:
-            self.metric[(self.base_name + metric.__class__.__name__)] = metric.compute()
-        self.run.metrics = self.metric
+        for metric in self.metrics_classes:
+            self.metric[metric.__class__.__name__].append(metric.compute())
 
     def reset(self):
-        for metric in self.metrics:
+        for metric in self.metrics_classes:
             metric.reset()
