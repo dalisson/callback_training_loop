@@ -17,8 +17,8 @@ from .runner import Runner
 __all__ = ['Learner']
 
 STANDARD_CALLBACK_LIST = [CudaCallback(), RecorderCallback(), SetTrainEvalCallback(),
-                          SetTrainableModulesCallback(), SetOptimizerCallback(),
-                          ProgressbarCallback(), SplitLossCallback(), IgniteCallback()]
+                          SetTrainableModulesCallback(), ProgressbarCallback(),
+                          SplitLossCallback(), IgniteCallback()]
 
 class Learner(Runner):
 
@@ -55,6 +55,7 @@ class Learner(Runner):
         '''
         if optim.lower() == 'sgd':
             optimizer = SGD
+            STANDARD_CALLBACK_LIST.append(SetOptimizerCallback(momentum=9e-1, weight_decay=5e-4))
         elif optim.lower() == 'adam':
             optimizer = Adam
 
