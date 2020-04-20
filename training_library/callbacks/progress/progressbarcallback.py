@@ -32,9 +32,9 @@ class ProgressbarCallback(Callback):
         stage = 'train' if self.run.in_train else 'eval'
         stats = stage + ': '
         for k in self.run.metrics[stage].keys():
-            stats += (k + '-' + self.run.metrics[stage][k][-1])
+            stats += '{} - {:.2f} '.format(k, self.run.metrics[stage][k][-1])
             stats += '|'
-        self.mbar.write(stats[:-1])
+        self.mbar.write(stats[:-2])
 
     def set_pb(self):
         self.pb = progress_bar(self.run.dl, parent=self.mbar)
