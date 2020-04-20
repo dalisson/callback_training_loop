@@ -21,11 +21,5 @@ class WandbCallback(Callback):
         self.config = config
         wandb.watch(self.run.model, log='all')
 
-    def begin_epoch(self):
-        self.metrics = self.run.train_metrics
-
-    def begin_validate(self):
-        self.metrics = self.run.eval_metrics
-
     def after_all_batches(self):
-        wandb.log(self.metrics)
+        wandb.log(self.run.metrics)
