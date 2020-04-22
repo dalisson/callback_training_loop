@@ -1,2 +1,2 @@
-from ..models.layers.ghostvladpoolinglayer import VladPoolingLayer
-from ..models.layers.amsoftmax import AMSoftmax
+from .amsoftmax import AMSoftmax
+from .ghostvladpoolinglayer import VladPoolingLayer
