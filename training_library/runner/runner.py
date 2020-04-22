@@ -118,9 +118,9 @@ class Runner():
                     self.in_train = True
                     self.all_batches()
                 with torch.no_grad():
+                    self.dl = self.data.valid_dl
                     if self('begin_validate'):
                         self.in_train = False
-                        self.dl = self.data.valid_dl
                         self.all_batches()
                 self('after_epoch')
         except CancelTrainException:
