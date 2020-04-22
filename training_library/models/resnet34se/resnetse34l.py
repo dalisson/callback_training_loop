@@ -1,13 +1,11 @@
-#! /usr/bin/python
-# -*- encoding: utf-8 -*-
-
 import torch
+import torchaudio
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.nn import Parameter
 from .resnetblocks import *
 
-__all__ = ['ResNetSE34']
+__all__ = ['ResNetSE34L']
 
 class ResNetSE(nn.Module):
     def __init__(self, block, layers, num_filters, nOut, encoder_type='SAP', **kwargs):
@@ -23,15 +21,15 @@ class ResNetSE(nn.Module):
         self.bn1 = nn.BatchNorm2d(num_filters[0])
         self.relu = nn.ReLU(inplace=True)
 
-        self.maxPool = nn.MaxPool2d(kernel_size=(3, 3), stride=(2, 1), padding=1)
         self.layer1 = self._make_layer(block, num_filters[0], layers[0])
         self.layer2 = self._make_layer(block, num_filters[1], layers[1], stride=(2, 2))
         self.layer3 = self._make_layer(block, num_filters[2], layers[2], stride=(2, 2))
-        self.layer4 = self._make_layer(block, num_filters[3], layers[3], stride=(2, 2))
+        self.layer4 = self._make_layer(block, num_filters[3], layers[3], stride=(1, 1))
 
-        self.avgpool = nn.AvgPool2d((9, 1), stride=1)
+        self.avgpool = nn.AvgPool2d((5, 1), stride=1)
 
-        self.instancenorm = nn.InstanceNorm1d(257)
+        self.instancenorm   = nn.InstanceNorm1d(40)
+        self.torchfb        = torchaudio.transforms.MelSpectrogram(sample_rate=16000, n_fft=512, win_length=400, hop_length=160, f_min=0.0, f_max=8000, pad=0, n_mels=40)
 
         if self.encoder_type == "SAP":
             self.sap_linear = nn.Linear(num_filters[3] * block.expansion, num_filters[3] * block.expansion)
@@ -73,15 +71,12 @@ class ResNetSE(nn.Module):
 
     def forward(self, x):
 
-        stft = torch.stft(x, 512, hop_length=int(0.01*16000), win_length=int(0.025*16000), window=torch.hann_window(int(0.025*16000)), center=False, normalized=False, onesided=True)
-        stft = (stft[:,:,:,0].pow(2)+stft[:,:,:,1].pow(2)).pow(0.5)
-
-        x = self.instancenorm(stft).unsqueeze(1).detach()
+        x = self.torchfb(x)+1e-6
+        x = self.instancenorm(x.log()).unsqueeze(1).detach()
 
         x = self.conv1(x)
         x = self.bn1(x)
         x = self.relu(x)
-        x = self.maxPool(x)
 
         x = self.layer1(x)
         x = self.layer2(x)
@@ -97,15 +92,13 @@ class ResNetSE(nn.Module):
             w = F.softmax(w, dim=1).view(x.size(0), x.size(1), 1)
             x = torch.sum(x * w, dim=1)
 
-        else:
-            raise ValueError('Undefined encoder')
-
         x = x.view(x.size()[0], -1)
         x = self.fc(x)
 
         return x
 
-def ResNetSE34(nOut=256, **kwargs):
+
+def ResNetSE34L(nOut=256, **kwargs):
     # Number of filters
     num_filters = [16, 32, 64, 128]
     model = ResNetSE(SEBasicBlock, [3, 4, 6, 3], num_filters, nOut, **kwargs)
