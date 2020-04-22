@@ -22,11 +22,12 @@ class ProgressbarCallback(Callback):
     def begin_epoch(self): 
         self.iter_in_dl = 0
         self.set_pb()
-        self.pb.update(0)
+        self.pb.update(self.iter_in_dl)
 
     def begin_validate(self):
         self.iter_in_dl = 0
         self.set_pb()
+        self.pb.update(self.iter_in_dl)
 
     def after_all_batches(self):
         stage = 'train' if self.run.in_train else 'eval'
