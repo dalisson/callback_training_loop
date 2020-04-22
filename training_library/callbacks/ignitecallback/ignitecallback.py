@@ -6,8 +6,7 @@ class IgniteCallback(Callback):
 
     def __init__(self):
         super(IgniteCallback, self).__init__()
-        self.metrics_classes = [Accuracy(), Recall(average = True), Precision(average = True)]
-        self.metric = None
+        self.metrics_classes = [Accuracy(), Recall(average=True), Precision(average=True)]
 
     def begin_fit(self):
         for key in self.run.metrics.keys():

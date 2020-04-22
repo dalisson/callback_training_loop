@@ -12,16 +12,16 @@ class ProgressbarCallback(Callback):
         self.run.logger = partial(self.mbar.write, table=True)
         self.iter_in_dl = 0
 
-    def after_fit(self):
-        self.mbar.on_iter_end()
-
-    def after_batch(self):
-        self.iter_in_dl += 1
-        self.pb.update(self.iter_in_dl)
-
     def begin_epoch(self): 
         self.iter_in_dl = 0
         self.set_pb()
+        self.pb.update(self.iter_in_dl)
+
+    def after_loss(self):
+        self.mbar.child.comment = 'loss {:3f}'.format(self.run.loss.detach().cpu().numpy())
+
+    def after_batch(self):
+        self.iter_in_dl += 1
         self.pb.update(self.iter_in_dl)
 
     def begin_validate(self):
@@ -36,6 +36,9 @@ class ProgressbarCallback(Callback):
             stats += '{} - {:.2f} '.format(k, self.run.metrics[stage][k][-1])
             stats += '|'
         self.mbar.write(stats[:-2])
+
+    def after_fit(self):
+        self.mbar.on_iter_end()
 
     def set_pb(self):
         self.pb = progress_bar(self.run.dl, parent=self.mbar)

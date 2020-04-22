@@ -21,12 +21,12 @@ class WandbCallback(Callback):
             setattr(config, k, v)
         wandb.watch(self.run.model, log='all')
 
-    def after_all_batches(self):
+    def after_epoch(self):
         '''
         Logs to wandbd after all batches are completed
         '''
-        stage = 'train' if self.run.in_train else 'eval'
         log = dict()
-        for key in self.run.metrics[stage].keys():
-            log[('%s_%s' % (stage, key))] = self.run.metrics[stage][key][-1]
+        for stage in ['train', 'eval']:
+            for key in self.run.metrics[stage].keys():
+                log[('%s_%s' % (stage, key))] = self.run.metrics[stage][key][-1]
         wandb.log(log)
