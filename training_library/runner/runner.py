@@ -27,7 +27,7 @@ class Runner():
         self.metrics['train'], self.metrics['eval'] = dict(), dict()
         self.dl = None
         self.trainable_modules = [self.model]
-        self.call_backs = []
+        self.callbacks = []
         self.add_callbacks(cbs)
         self.iter = 0
         self.total_iter = 0
@@ -43,12 +43,12 @@ class Runner():
         for c_b in call_backs:
             c_b.set_runner(self)
             setattr(self, c_b.name, c_b)
-        self.call_backs += call_backs
+        self.callbacks += call_backs
 
     def remove_callback(self, cb_name):
         if hasattr(self, cb_name):
             delattr(self, cb_name)
-            self.call_backs = [cb for cb in self.call_backs if cb.name != cb_name]
+            self.callbacks = [cb for cb in self.callbacks if cb.name != cb_name]
 
 
     def one_batch(self, x_b, y_b):
@@ -130,7 +130,7 @@ class Runner():
 
 
     def __call__(self, cb_name):
-        for call_back in sorted(self.call_backs, key=lambda x: x.order):
+        for call_back in sorted(self.callbacks, key=lambda x: x.order):
             if hasattr(call_back, cb_name):
                 res = call_back(cb_name)
                 if not res and res is not None:
