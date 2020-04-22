@@ -26,7 +26,7 @@ class WandbCallback(Callback):
         Logs to wandbd after all batches are completed
         '''
         log = dict()
-        for stage in ['train', 'eval']:
+        for stage in self.run.metrics.keys():
             for key in self.run.metrics[stage].keys():
                 log[('%s_%s' % (stage, key))] = self.run.metrics[stage][key][-1]
         wandb.log(log)
