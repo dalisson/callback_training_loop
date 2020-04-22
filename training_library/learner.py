@@ -40,13 +40,16 @@ class Learner(Runner):
         '''
         The device running the learner
         '''
-        attr = getattr(self, 'cuda')
-        return attr.device
+        attr = getattr(self, 'cuda', None)
+        if attr:
+            return attr.device
+        return 'cpu'
 
     @device.setter
     def device(self, new_device):
-        attr = getattr(self, 'cuda')
-        attr.device = new_device
+        attr = getattr(self, 'cuda', None)
+        if attr:
+            attr.device = new_device
 
     @classmethod
     def build_standard_runner(cls, model, data, loss_func, optim='SGD', min_lr=1e-2, max_lr=None):
@@ -80,11 +83,11 @@ class Learner(Runner):
             component.load_state_dict(s_dict)
 
         self.remove_callback('lr_find')
-        attr = getattr(self, 'recorder')
+        attr = getattr(self, 'recorder', None)
         if not attr:
             return 'recorder not found'
-        attr.plot_lr_find()
-        
+        attr.plot_lr_find(skip_last=skip_last)
+
 
     def fit_one_cycle(self, n_epochs, max_lr):
 
