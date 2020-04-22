@@ -23,7 +23,7 @@ class WandbCallback(Callback):
 
     def after_epoch(self):
         '''
-        Logs to wandbd after all batches are completed
+        Logs to wandbd after each epoch is done
         '''
         log = dict()
         for stage in self.run.metrics.keys():
