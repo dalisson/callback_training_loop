@@ -20,7 +20,7 @@ class RecorderCallback(Callback):
         self.records['lr'] = [[] for _ in range(n_groups)]
         self.records['loss'] = []
 
-    def after_loss(self):
+    def after_loss_backward(self):
         '''
         Register parameters after calculating loss
         '''
