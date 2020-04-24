@@ -31,7 +31,7 @@ class ProgressbarCallback(Callback):
 
     def after_all_batches(self):
         stage = 'train' if self.run.in_train else 'eval'
-        stats = 'Epoch {} '.format(self.run.epoch)
+        stats = 'Epoch {} - '.format(self.run.epoch)
         stats += stage + ': '
         for k in self.run.metrics[stage].keys():
             stats += '{} - {:.2f} '.format(k, self.run.metrics[stage][k][-1])
