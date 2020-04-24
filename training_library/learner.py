@@ -1,4 +1,3 @@
-import torch
 from torch.optim import SGD, Adam
 from .callbacks.cuda import CudaCallback
 from .callbacks.lrfinder import LR_Find
@@ -91,17 +90,23 @@ class Learner(Runner):
         attr.plot_lr_find(skip_last=skip_last)
 
 
-    def fit_one_cycle(self, n_epochs, max_lr):
+    def fit_one_cycle(self, n_epochs, max_lr, sched_type='cosine'):
         '''
         One cycle fitting using cosine scheduling.
         '''
-
+        if sched_type == 'cosine':
+            sched_func = sched_cos
+        elif sched_type == 'linear':
+            sched_func = sched_lin
+        else:
+            print('undefined schedule function')
+            return 1
         lrs = [group['lr'] for group in self.optim.param_groups]
         if not isinstance(max_lr, list):
             max_lr = [max_lr] * self.n_param_groups
         sched_funcs = []
         for base_lr, m_lr in zip(lrs, max_lr):
-            func = combine_scheds([0.3, 0.7], [sched_cos(base_lr, m_lr), sched_cos(m_lr, base_lr*1e-1)])
+            func = combine_scheds([0.3, 0.7], [sched_func(base_lr, m_lr), sched_func(m_lr, base_lr*1e-1)])
             sched_funcs.append(func)
 
         sched_callback = ParamScheduler(pname='lr', sched_func=sched_funcs)
