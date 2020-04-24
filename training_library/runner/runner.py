@@ -136,3 +136,32 @@ class Runner():
                 if not res and res is not None:
                     return False
         return True
+
+    def save(self, name=None, optimizer=False):
+        '''
+        Saves a model state dict and optionally the associated optimizer
+            name: str - name of the model
+            optimizer: bool - when true also save the optimizer state dict
+        '''
+        if name is None:
+            name = 'model e%s.' % self.epoch
+            for metric in self.metrics['eval'].keys():
+                name += '{}-{:.3f}.'.format(metric, self.metrics['eval'][metric][-1])
+            name += 'pth'
+        state_dict = dict()
+        state_dict['model_state_dict'] = self.model.state_dict()
+        if optimizer:
+            state_dict['optimizer_state_dict'] = self.optim.state_dict()
+
+        torch.save(state_dict, name)
+
+    def load(self, model, optimizer=False):
+        '''
+        Loads parameters to model and optimizer
+            name: Union[str, path] - model location
+            optimizer: bool - is optimizer state to be loaded from file
+        '''
+        checkpoint = torch.load(model)
+        self.model.load_state_dict(checkpoint['model_state_dict'])
+        if optimizer:
+            self.optim.load_state_dict(checkpoint['optimizer_state_dict'])
