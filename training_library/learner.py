@@ -1,3 +1,4 @@
+import torch
 from torch.optim import SGD, Adam
 from .callbacks.cuda import CudaCallback
 from .callbacks.lrfinder import LR_Find
@@ -54,7 +55,7 @@ class Learner(Runner):
     @classmethod
     def build_standard_runner(cls, model, data, loss_func, optim='SGD', min_lr=1e-2, max_lr=None):
         '''
-            Build a runner using standard callbacks
+        Build a runner using standard callbacks
         '''
         if optim.lower() == 'sgd':
             optimizer = SGD
@@ -70,7 +71,6 @@ class Learner(Runner):
     def lr_find(self, skip_last=5):
         '''
         Finds the best learning rate for model
-
         '''
         state_dicts = []
         state_dicts.extend([self.model.state_dict(), self.optim.state_dict()])
@@ -90,6 +90,9 @@ class Learner(Runner):
 
 
     def fit_one_cycle(self, n_epochs, max_lr):
+        '''
+        One cycle fitting using cosine scheduling.
+        '''
 
         lrs = [group['lr'] for group in self.optim.param_groups]
         if not isinstance(max_lr, list):
@@ -122,3 +125,32 @@ class Learner(Runner):
                                  wandb_name=name,
                                  entity=entity)
         self.add_callbacks([wandbc_b])
+
+    def save(self, name=None, optimizer=False):
+        '''
+        Saves a model state dict and optionally the associated optimizer
+            name: str - name of the model
+            optimizer: bool - when true also save the optimizer state dict
+        '''
+        if name is None:
+            name = 'model e%s.' % self.epoch
+            for metric in self.metrics['eval'].keys():
+                name += '{}-{:.3f}.'.format(metric, self.metrics['eval'][metric][-1])
+            name += 'pth'
+        state_dict = dict()
+        state_dict['model_state_dict'] = self.model.state_dict()
+        if optimizer:
+            state_dict['optimizer_state_dict'] = self.optim.state_dict()
+
+        torch.save(state_dict, name)
+
+    def load(self, model, optimizer=False):
+        '''
+        Loads parameters to model and optimizer
+            name: Union[str, path] - model location
+            optimizer: bool - is optimizer state to be loaded from file
+        '''
+        checkpoint = torch.load(model)
+        self.model.load_state_dict(checkpoint['model_state_dict'])
+        if optimizer:
+            self.optim.load_state_dict(checkpoint['optimizer_state_dict'])
