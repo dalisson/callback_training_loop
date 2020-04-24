@@ -36,9 +36,7 @@ class ProgressbarCallback(Callback):
         for k in self.run.metrics[stage].keys():
             stats += '{} - {:.2f} '.format(k, self.run.metrics[stage][k][-1])
             stats += '|'
-        stats = stats[:-2]
-        if not self.run.in_train: stats += '\n'
-        self.mbar.write(stats)
+        self.mbar.write(stats[:-2])
 
     def after_fit(self):
         self.mbar.on_iter_end()
