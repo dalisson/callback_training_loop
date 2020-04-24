@@ -20,9 +20,9 @@ class Data(object):
                                                      test_dir=test_dir,
                                                      batch_size=b_size,
                                                      data_augmentation=data_aug)
-        classes = getattr(dataloaders[0], 'classes', None)
+        classes = getattr(dataloaders[0], 'class_to_idx', None)
         if classes:
-            n_classes = len(classes)
+            n_classes = len(list(classes.keys()))
         else:
             n_classes = None
         return cls(dataloaders=dataloaders, n_classes=n_classes)
