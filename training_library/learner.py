@@ -12,6 +12,7 @@ from .callbacks.progress import ProgressbarCallback
 from .callbacks.splitloss import SplitLossCallback
 from .callbacks.wandbcallback import WandbCallback
 from .callbacks.ignitecallback import IgniteCallback
+from .callbacks.savemodel import SaveOnEpochEndCallback
 from .runner import Runner
 
 
@@ -126,3 +127,6 @@ class Learner(Runner):
                                  wandb_name=name,
                                  entity=entity)
         self.add_callbacks([wandbc_b])
+
+    def save_every_epoch(self, optimizer=False):
+        self.add_callbacks(SaveOnEpochEndCallback(optimizer=optimizer))
