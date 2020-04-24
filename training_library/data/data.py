@@ -20,7 +20,7 @@ class Data(object):
                                                      test_dir=test_dir,
                                                      batch_size=b_size,
                                                      data_augmentation=data_aug)
-        classes = getattr(dataloaders[0], 'class_to_idx', None)
+        classes = getattr(dataloaders[0], 'idx_to_class', None)
         if classes:
             n_classes = len(list(classes.keys()))
         else:
