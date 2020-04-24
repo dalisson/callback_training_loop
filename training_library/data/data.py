@@ -23,4 +23,6 @@ class Data(object):
         classes = getattr(dataloaders[0], 'classes', None)
         if classes:
             n_classes = len(classes)
+        else:
+            n_classes = None
         return cls(dataloaders=dataloaders, n_classes=n_classes)
