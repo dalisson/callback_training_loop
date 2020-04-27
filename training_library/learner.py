@@ -134,7 +134,6 @@ class Learner(Runner):
                                  wandb_name=name,
                                  entity=entity)
         self.remove_callback('wandb')
-
         self.add_callbacks([wandbc_b])
 
     def save_every_epoch(self, optimizer=False):

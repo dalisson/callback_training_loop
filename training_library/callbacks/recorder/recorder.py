@@ -44,5 +44,4 @@ class RecorderCallback(Callback):
         n = len(self.records['loss'])-skip_last
         plt.plot(self.records['lr'][-1][:n], self.records['loss'][:n])
         plt.xscale('log')
-        self.begin_fit()
         
