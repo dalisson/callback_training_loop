@@ -109,6 +109,7 @@ class Learner(Runner):
         lrs = [group['lr'] for group in self.optim.param_groups]
         if not isinstance(max_lr, list):
             max_lr = [max_lr] * self.n_param_groups
+        assert len(max_lr) == self.n_param_groups
         sched_funcs = []
         for base_lr, m_lr in zip(lrs, max_lr):
             func = combine_scheds(divs, [sched_func(base_lr, m_lr), sched_func(m_lr, base_lr*1e-1)])
