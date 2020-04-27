@@ -51,6 +51,8 @@ class Learner(Runner):
         attr = getattr(self, 'cuda', None)
         if attr:
             attr.device = new_device
+        else:
+            return 'device not set, check cuda callback'
 
     @classmethod
     def build_standard_runner(cls, model, data, loss_func, optim='SGD', min_lr=1e-2, max_lr=None):
