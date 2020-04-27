@@ -144,7 +144,7 @@ class Runner():
             optimizer: bool - when true also save the optimizer state dict
         '''
         if name is None:
-            name = 'model e%s.' % self.epoch
+            name = 'model_e%s.' % self.epoch
             for metric in self.metrics['eval'].keys():
                 name += '{}-{:.3f}.'.format(metric, self.metrics['eval'][metric][-1])
             name += 'pth'
