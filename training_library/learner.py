@@ -1,5 +1,6 @@
 from torch.optim import SGD, Adam
 from .callbacks.cuda import CudaCallback
+from .callbacks.exceptions import DeviceException
 from .callbacks.lrfinder import LR_Find
 from .callbacks.recorder import RecorderCallback
 from .callbacks.modelsettings import SetTrainableModulesCallback,\
@@ -52,7 +53,7 @@ class Learner(Runner):
         if attr:
             attr.device = new_device
         else:
-            return 'device not set, check cuda callback'
+            raise DeviceException
 
     @classmethod
     def build_standard_runner(cls, model, data, loss_func, optim='SGD', min_lr=1e-2, max_lr=None):
@@ -92,10 +93,11 @@ class Learner(Runner):
         attr.plot_lr_find(skip_last=skip_last)
 
 
-    def fit_one_cycle(self, n_epochs, max_lr, divs=[0.3, 0.7], sched_type='cosine'):
+    def fit_one_cycle(self, n_epochs, max_lr, divs=None, sched_type='cosine'):
         '''
         One cycle fitting using cosine scheduling.
         '''
+        divs = [0.3, 0.7] if not divs else divs
         assert sum(divs) == 1
         if sched_type == 'cosine':
             sched_func = sched_cos
