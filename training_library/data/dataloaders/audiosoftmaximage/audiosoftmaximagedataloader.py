@@ -40,7 +40,7 @@ def build_dataloaders(train_dir, test_dir, batch_size, data_augmentation = True)
                 #to_torch_tensor
                 ])
     else:
-        softmax_transforms_train = transforms.Compose([ 
+        softmax_transforms_train = transforms.Compose([
                 normalize,
                 transforms.ToTensor(),
                 ])
@@ -50,11 +50,23 @@ def build_dataloaders(train_dir, test_dir, batch_size, data_augmentation = True)
                 transforms.ToTensor(),
                 ])
 
-    train_softmax_dataset = datasets.DatasetFolder(train_dir, transform = softmax_transforms_train, loader = load_images_softmax, extensions=(".npy",))
-    train_softmax_loader = torch.utils.data.DataLoader(train_softmax_dataset, batch_size = batch_size, shuffle = True)
+    train_softmax_dataset = datasets.DatasetFolder(train_dir,
+                                                   transform=softmax_transforms_train,
+                                                   loader=load_images_softmax,
+                                                   extensions=(".npy",))
 
-    test_softmax_dataset = datasets.DatasetFolder(test_dir, transform = softmax_transforms_test, loader = load_images_softmax, extensions=(".npy",))
-    test_softmax_loader = torch.utils.data.DataLoader(test_softmax_dataset, batch_size = batch_size, shuffle = False)
+    train_softmax_loader = torch.utils.data.DataLoader(train_softmax_dataset,
+                                                       batch_size=batch_size,
+                                                       shuffle=True)
+
+    test_softmax_dataset = datasets.DatasetFolder(test_dir,
+                                                  transform=softmax_transforms_test,
+                                                  loader=load_images_softmax,
+                                                  extensions=(".npy",))
+
+    test_softmax_loader = torch.utils.data.DataLoader(test_softmax_dataset,
+                                                      batch_size=batch_size,
+                                                      shuffle=False)
 
     train_softmax_loader.idx_to_class = {i: c for c, i in train_softmax_dataset.class_to_idx.items()}
     test_softmax_loader.idx_to_class = {i: c for c, i in test_softmax_dataset.class_to_idx.items()}
