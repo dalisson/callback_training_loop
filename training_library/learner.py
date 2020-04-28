@@ -56,7 +56,7 @@ class Learner(Runner):
             raise DeviceException
 
     @classmethod
-    def build_standard_runner(cls, model, data, loss_func, optim='SGD', min_lr=1e-2, max_lr=None):
+    def build_standard_runner(cls, model, data, loss_func, optim='SGD', min_lr=1e-2):
         '''
             Build a runner using standard callbacks
         '''
@@ -66,8 +66,6 @@ class Learner(Runner):
         elif optim.lower() == 'adam':
             optimizer = Adam
             STANDARD_CALLBACK_LIST.append(SetOptimizerCallback())
-        if max_lr:
-            pass
 
         return cls(model, data, loss_func, optimizer, min_lr, cbs=STANDARD_CALLBACK_LIST)
 
