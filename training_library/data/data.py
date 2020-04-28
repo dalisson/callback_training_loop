@@ -1,4 +1,6 @@
 from .dataloaders.audiosoftmaximage import build_softmax_image_dataloader
+from matplotlib import pyplot as plt
+import numpy as np
 
 class Data(object):
     '''
@@ -25,3 +27,15 @@ class Data(object):
         else:
             n_classes = None
         return cls(dataloaders=dataloaders, n_classes=n_classes)
+
+    def show_batch(self, figsize=None):
+        figsize = (15,60) if not figsize else figsize
+        x, y = next(iter(self.train_dl))
+        x, y = x[:4], y[:4]
+
+        _, axes = plt.subplots(2,2, figsize=figsize)
+        for ax, samples in zip(axes.flatten(), (x,y)):
+            s_x, s_y = samples
+            transposed = np.transpose(s_x.detach().cpu().numpy(), (1,2,0)) 
+            ax.imshow(transposed)
+            ax.set_title(s_y.detach().cpu().numpy())
