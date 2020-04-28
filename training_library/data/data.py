@@ -44,7 +44,7 @@ class Data(object):
         '''
         figsize = (8, 8) if not figsize else figsize
         x, y = next(iter(self.train_dl))
-        _, axes = plt.subplots(4, 2, figsize=figsize)
+        _, axes = plt.subplots(2, 2, figsize=figsize)
         for i, ax in enumerate(axes.flatten()):
             s_x, s_y = x[i], y[i]
             transposed = np.transpose(s_x.detach().cpu().numpy(), (1, 2, 0))
