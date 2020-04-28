@@ -56,7 +56,7 @@ class Learner(Runner):
             raise DeviceException
 
     @classmethod
-    def build_standard_runner(cls, model, data, loss_func, optim='SGD', min_lr=1e-2):
+    def build_standard_learner(cls, model, data, loss_func, optim='SGD', min_lr=1e-2):
         '''
             Build a runner using standard callbacks
         '''

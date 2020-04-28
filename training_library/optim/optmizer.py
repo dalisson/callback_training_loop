@@ -6,7 +6,8 @@ from ..utils import compose, listfy
 class Optmizer():
     '''
     The base of all optimizers, basically there is one optimizer
-    the difference resides on the steppers of each particular optimizer
+    the difference resides on the steppers of each particular optimizer,
+    this class does not support optimizers with state
     '''
     def __init__(self, params, steppers, **defaults):
         self.param_groups = list(params)
