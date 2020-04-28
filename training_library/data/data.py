@@ -14,7 +14,6 @@ class Data(object):
     def from_audio_images(cls, train_dir, test_dir, b_size, data_aug=True):
         '''
         Builds Data class for audio images to be used with Softmax
-
         '''
         dataloaders = build_softmax_image_dataloader(train_dir=train_dir,
                                                      test_dir=test_dir,
