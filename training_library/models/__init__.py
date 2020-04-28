@@ -1,2 +1,2 @@
 from .vladnetwork import VladNetwork
-from .resnet34se import ResNetSE34, ResNetSE34L, VGGVox
+from .resnet34se import resnetse34, resnetse34l, VGGVox
