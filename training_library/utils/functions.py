@@ -1,4 +1,4 @@
-__all__ = ['listfy']
+__all__ = ['listfy', 'compose']
 
 def listfy(obj_to_list):
     '''
@@ -13,3 +13,12 @@ def listfy(obj_to_list):
         else:
             res += listfy(element)
     return res
+
+def compose(x, funcs, **kwargs):
+    '''
+    Function composition
+    '''
+    assert isinstance(funcs, (list, tuple))
+    for func in funcs:
+        x = func(x, **kwargs)
+    return x
