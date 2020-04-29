@@ -10,19 +10,19 @@ class Optmizer():
     this class does not support optimizers with state
     '''
     def __init__(self, params, steppers, **defaults):
-        self.param_groups = list(params)
+        self.params = list(params)
         #param_groups must be a list of lists
-        if not isinstance(self.param_groups, list):
-            self.param_groups = [self.param_groups]
-        self.hypers = [{**defaults} for p in self.param_groups]
+        if not isinstance(self.params, list):
+            self.params = [self.params]
         self.steppers = listfy(steppers)
+        self.param_groups = [{'params': param, **defaults} for param in self.params]
 
     def grad_params(self):
         '''
         Returns all the parameters along with the associated hyper parameters
         '''
-        return [(p, hyper) for pg, hyper in zip(self.param_groups, self.hypers)
-                for p in pg if p.grad is not None]
+        return [(p, {key : value for key, value in item.items() if key != 'params'})
+                for item in self.param_groups for p in item['params'] if p.grad is not None]
 
     def zero_grad(self):
         '''
@@ -38,3 +38,10 @@ class Optmizer():
         '''
         for p, hyper in self.grad_params():
             compose(p, self.steppers, **hyper)
+
+class StatefulOptmizer(Optmizer):
+    '''
+    Optimizer that holds the state, used for optimizers that need state
+    eg. sgd with momentum
+    '''
+
