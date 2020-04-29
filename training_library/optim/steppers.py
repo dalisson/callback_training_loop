@@ -2,21 +2,18 @@
 Stepper functions to used on optimizer
 '''
 
-__all__ = ['weight_decay']
+__all__ = ['weight_decay_step', 'sgd_step', 'sgd_with_momentum_step']
 
-def maybe_update(os, dest, f):
-    '''
-    Replaces functions defaults if optimizer is provided
-    '''
-    for o in os:
-        for k,v in f(o).items():
-            if k not in dest:
-                dest[k] = v
+def sgd_step(p, lr, **kwargs):
+    p.data.add_(-lr, p.grad.data)
+    return p
 
-def weight_decay(p, lr, wd=0, **kwargs):
+def weight_decay_step(p, lr, wd=0, **kwargs):
     '''
     weight decay stepper
     '''
     p.data.mul_(1- lr*wd)
     return p
 
+def sgd_with_momentum_step(p, lr, grad_avg, **kwargs):
+    p.data.add_(-lr, grad_avg)

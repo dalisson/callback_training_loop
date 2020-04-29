@@ -3,7 +3,7 @@ Sets the base for optimizers
 '''
 from ..utils import compose, listfy
 
-class Optmizer():
+class Optimizer():
     '''
     The base of all optimizers, basically there is one optimizer
     the difference resides on the steppers of each particular optimizer,
@@ -12,7 +12,7 @@ class Optmizer():
     def __init__(self, params, steppers, **defaults):
         self.params = list(params)
         #param_groups must be a list of lists
-        if not isinstance(self.params, list):
+        if not isinstance(self.params[0], list):
             self.params = [self.params]
         self.steppers = listfy(steppers)
         self.param_groups = [{'params': param, **defaults} for param in self.params]
@@ -39,9 +39,21 @@ class Optmizer():
         for p, hyper in self.grad_params():
             compose(p, self.steppers, **hyper)
 
-class StatefulOptmizer(Optmizer):
+class StatefulOptimizer(Optimizer):
     '''
     Optimizer that holds the state, used for optimizers that need state
     eg. sgd with momentum
     '''
+    def __init__(self, params, steppers, stats=None, **defaults):
+        self.stats = listfy(stats)
+        super().__init__(params, steppers, **defaults)
+        self.state = {}
 
+    def step(self):
+        for p, hyper in self.grad_params():
+            if p not in self.state:
+                self.state[p] = {stat.init_state(p).items() for stat in self.stats}
+            state = self.state[p]
+            for stat in self.stats:
+                state = stat.update(p, state, **hyper)
+            compose(p, self.steppers, **state, **hyper)
