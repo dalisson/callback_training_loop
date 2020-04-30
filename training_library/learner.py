@@ -4,7 +4,8 @@ from .callbacks.exceptions import DeviceException
 from .callbacks.lrfinder import LR_Find
 from .callbacks.recorder import RecorderCallback
 from .callbacks.modelsettings import SetTrainableModulesCallback,\
-                                     SetOptimizerCallback, SetTrainEvalCallback
+                                     SetOptimizerCallback, SetTrainEvalCallback,\
+                                     Resnetse34
 
 from .callbacks.scheduler import ParamScheduler
 from .callbacks.scheduler import sched_lin, sched_cos, sched_exp, combine_scheds
@@ -56,7 +57,7 @@ class Learner(Runner):
             raise DeviceException
 
     @classmethod
-    def build_standard_runner(cls, model, data, loss_func, optim='SGD', min_lr=1e-2, max_lr=None):
+    def build_standard_runner(cls, model, data, loss_func, optim='SGD', min_lr=1e-2, transpose=False):
         '''
             Build a runner using standard callbacks
         '''
@@ -66,8 +67,9 @@ class Learner(Runner):
         elif optim.lower() == 'adam':
             optimizer = Adam
             STANDARD_CALLBACK_LIST.append(SetOptimizerCallback())
-        if max_lr:
-            pass
+
+        if transpose:
+            STANDARD_CALLBACK_LIST.append(Resnetse34())
 
         return cls(model, data, loss_func, optimizer, min_lr, cbs=STANDARD_CALLBACK_LIST)
 
