@@ -1,7 +1,7 @@
 '''
 Builds the optimizers
 '''
-from .optimizer import StatefulOptimizer
+from .optim import StatefulOptimizer
 from .stats import AverageGradStat, AverageSqrGradStat, StepCountStat
 from .steppers import weight_decay_step, sgd_with_momentum_step, adam_step
 
