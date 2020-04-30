@@ -3,8 +3,7 @@ from .callbacks.cuda import CudaCallback
 from .callbacks.exceptions import DeviceException
 from .callbacks.lrfinder import LR_Find
 from .callbacks.recorder import RecorderCallback
-from .callbacks.modelsettings import SetTrainableModulesCallback,\
-                                     SetOptimizerCallback, SetTrainEvalCallback
+
 
 from .callbacks.scheduler import ParamScheduler
 from .callbacks.scheduler import sched_lin, sched_cos, sched_exp, combine_scheds
@@ -18,8 +17,7 @@ from .runner import Runner
 
 __all__ = ['Learner']
 
-STANDARD_CALLBACK_LIST = [CudaCallback(), RecorderCallback(), SetTrainEvalCallback(),
-                          SetTrainableModulesCallback(), ProgressbarCallback(),
+STANDARD_CALLBACK_LIST = [CudaCallback(), RecorderCallback(), ProgressbarCallback(),
                           SplitLossCallback(), IgniteCallback()]
 
 class Learner(Runner):

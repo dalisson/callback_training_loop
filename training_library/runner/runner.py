@@ -116,11 +116,13 @@ class Runner():
             for epoch in range(epochs):
                 if self.begin_epoch(epoch):
                     self.in_train = True
+                    self.model.train()
                     self.all_batches()
                 with torch.no_grad():
                     self.dl = self.data.valid_dl
                     if self('begin_validate'):
                         self.in_train = False
+                        self.model.eval()
                         self.all_batches()
                 self('after_epoch')
         except CancelTrainException:

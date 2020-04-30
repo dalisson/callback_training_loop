@@ -3,6 +3,8 @@ Sets the base for optimizers
 '''
 from ..utils import compose, listfy
 
+__all__ = ['Optimizer', 'StatefulOptimizer']
+
 class Optimizer():
     '''
     The base of all optimizers, basically there is one optimizer
@@ -57,3 +59,14 @@ class StatefulOptimizer(Optimizer):
             for stat in self.stats:
                 state = stat.update(p, state, **hyper)
             compose(p, self.steppers, **state, **hyper)
+
+    def state_dict(self):
+        return self.state
+
+    def load_state_dict(self, dic: dict):
+        assert isinstance(dic, dict)
+        try:
+            assert list(k for k in dic.keys()) == list(key for key, _ in self.grad_params())
+        except Exception as e:
+            return e
+        self.state = dic
