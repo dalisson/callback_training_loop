@@ -32,7 +32,7 @@ class AverageGradStat(Stat):
 
 class AverageSqrGradStat(Stat):
     '''
-    the moving squared average of the grads, used for optimizers that use momentum
+    the moving squared average of the grads
     '''
     def __init__(self, dampening: bool = True):
         self.dampening = dampening

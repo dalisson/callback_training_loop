@@ -21,6 +21,7 @@ class Runner():
         self.model, self.data, self.loss_func = model, data, loss_func
         self.optim = optim
         self.n_param_groups = 0
+        self.training_canceled = False
         self.y_hat, self.x_batch, self.y_batch, self.loss = None, None, None, None
         self.epoch, self.epochs = 0, 0
         self.metrics = dict()

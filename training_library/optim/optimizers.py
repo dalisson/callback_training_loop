@@ -5,6 +5,7 @@ from .optim import StatefulOptimizer
 from .stats import AverageGradStat, AverageSqrGradStat, StepCountStat
 from .steppers import weight_decay_step, sgd_with_momentum_step, adam_step,\
                       lamb_step
+from ..utils import listfy
 
 __all__ = ['sgd', 'adam', 'lamb']
 
@@ -18,14 +19,15 @@ def sgd(model, lr, mom=0, weight_decay=1e-5):
     '''
     Builds a sgd optimizer
     '''
-    
+    lr = listfy(lr)
     return StatefulOptimizer(get_param_groups(model), [weight_decay_step, sgd_with_momentum_step],
-                             [AverageSqrGradStat(dampening=False)], lr=lr, mom=mom, wd=weight_decay)
+                             [AverageGradStat(dampening=False)], lr=lr, mom=mom, wd=weight_decay)
 
 def adam(model, lr, betas: tuple = (9e-1, 99e-2), weight_decay=1e-5):
     '''
     Builds the adam optimizer
     '''
+    lr = listfy(lr)
     assert isinstance(betas, tuple) and len(betas) == 2
     return StatefulOptimizer(get_param_groups(model), [weight_decay_step, adam_step],
                              [StepCountStat(), AverageGradStat(), AverageSqrGradStat()],
@@ -35,6 +37,7 @@ def lamb(model, lr, betas: tuple = (9e-1, 99e-2), weight_decay=1e-5):
     '''
     Builds the adam optimizer
     '''
+    lr = listfy(lr)
     assert isinstance(betas, tuple) and len(betas) == 2
     return StatefulOptimizer(get_param_groups(model), [weight_decay_step, lamb_step],
                              [StepCountStat(), AverageGradStat(), AverageSqrGradStat()],
