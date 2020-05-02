@@ -128,6 +128,7 @@ class Runner():
                 self('after_epoch')
         except CancelTrainException:
             self('after_cancel_train')
+            self.training_canceled = False
         finally:
             self('after_fit')
 
