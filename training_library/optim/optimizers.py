@@ -18,7 +18,7 @@ def sgd(model, lr, mom=0, weight_decay=1e-5):
     '''
     Builds a sgd optimizer
     '''
-
+    
     return StatefulOptimizer(get_param_groups(model), [weight_decay_step, sgd_with_momentum_step],
                              [AverageSqrGradStat(dampening=False)], lr=lr, mom=mom, wd=weight_decay)
 
