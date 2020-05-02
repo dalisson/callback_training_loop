@@ -82,7 +82,7 @@ class Learner(Runner):
         else:
             print('undefined schedule function')
             return
-        lrs = [group['lr'] for group in self.optim.param_groups]
+        lrs = self.lr
         if not isinstance(max_lr, list):
             max_lr = [max_lr] * self.n_param_groups
         assert len(max_lr) == self.n_param_groups
@@ -96,9 +96,9 @@ class Learner(Runner):
         super().fit(epochs=n_epochs, additional_cbs=sched_callback)
 
 
-    def fit_exp(self, n_epochs, gamma = 0.9):
+    def fit_exp(self, n_epochs, gamma=0.9):
 
-        lrs = self.learning_rate
+        lrs = self.lr
         sched_funcs = []
         for lr in lrs:
             sched_funcs.append(sched_exp(lr, lr*(gamma**n_epochs)))
