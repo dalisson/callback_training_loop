@@ -40,7 +40,7 @@ def adam(model, lr, betas: tuple = (9e-1, 99e-2), weight_decay=1e-5):
     Builds the adam optimizer
     '''
     lrs = listfy(lr)
-    assert isinstance(betas, tuple, list) and len(betas) == 2
+    assert isinstance(betas, (tuple, list)) and len(betas) == 2
     optim = StatefulOptimizer(get_param_groups(model), [weight_decay_step, adam_step],
                               [StepCountStat(), AverageGradStat(), AverageSqrGradStat()],
                               lr=lrs[0], mom=betas[0], sqrt_mom=betas[1], wd=weight_decay)
@@ -52,7 +52,7 @@ def lamb(model, lr, betas: tuple = (9e-1, 99e-2), weight_decay=1e-5):
     Builds the adam optimizer
     '''
     lrs = listfy(lr)
-    assert isinstance(betas, tuple) and len(betas) == 2
+    assert isinstance(betas, (tuple, list)) and len(betas) == 2
     optim = StatefulOptimizer(get_param_groups(model), [weight_decay_step, lamb_step],
                               [StepCountStat(), AverageGradStat(), AverageSqrGradStat()],
                               lr=lrs[0], mom=betas[0], sqrt_mom=betas[1], wd=weight_decay)
