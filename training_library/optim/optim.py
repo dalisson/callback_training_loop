@@ -54,7 +54,8 @@ class StatefulOptimizer(Optimizer):
     def step(self):
         for p, hyper in self.grad_params():
             if p not in self.state:
-                self.state[p] = {stat.init_state(p).items() for stat in self.stats}
+                self.state[p] = {key: item  for stat in self.stats for key, item
+                                 in stat.init_state(p).items()}
             state = self.state[p]
             for stat in self.stats:
                 state = stat.update(p, state, **hyper)
