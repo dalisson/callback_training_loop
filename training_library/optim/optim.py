@@ -1,6 +1,7 @@
 '''
 Sets the base for optimizers
 '''
+import copy
 from ..utils import compose, listfy
 
 __all__ = ['Optimizer', 'StatefulOptimizer']
@@ -62,12 +63,13 @@ class StatefulOptimizer(Optimizer):
             compose(p, self.steppers, **state, **hyper)
 
     def state_dict(self):
-        return self.state
+        return copy.deepcopy(self.state)
 
     def load_state_dict(self, dic: dict):
         assert isinstance(dic, dict)
         try:
-            assert list(k for k in dic.keys()) == list(key for key, _ in self.grad_params())
+            equality = list(k for k in dic.keys()) == list(key for key, _ in self.grad_params())
+            assert equality or dic == {}
         except Exception as e:
             return e
         self.state = dic
