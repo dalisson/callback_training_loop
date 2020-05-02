@@ -23,19 +23,6 @@ STANDARD_CALLBACK_LIST = [CudaCallback(), RecorderCallback(), ProgressbarCallbac
 class Learner(Runner):
 
     @property
-    def learning_rate(self):
-        lr = []
-        for pg in self.optim.param_groups:
-            lr.append(pg['lr'])
-        return lr
-
-    @learning_rate.setter
-    def learning_rate(self, new_lr):
-        if not isinstance(new_lr, (list, tuple)):
-            new_lr = [new_lr] * self.n_param_groups
-        for lr, pg in zip(new_lr, self.optim.param_groups):
-            pg['lr'] = lr
-    @property
     def device(self):
         '''
         The device running the learner
@@ -54,11 +41,11 @@ class Learner(Runner):
             raise DeviceException
 
     @classmethod
-    def build_standard_learner(cls, model, data, loss_func, optim, min_lr=1e-2):
+    def build_standard_learner(cls, model, data, loss_func, optim):
         '''
             Build a runner using standard callbacks
         '''
-        return cls(model, data, loss_func, optim, min_lr, cbs=STANDARD_CALLBACK_LIST)
+        return cls(model, data, loss_func, optim, cbs=STANDARD_CALLBACK_LIST)
 
     def lr_find(self, skip_last=5):
         '''
