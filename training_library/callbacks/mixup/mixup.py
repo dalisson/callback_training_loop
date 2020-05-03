@@ -1,4 +1,6 @@
-# PyTorch has a log-gamma but not a gamma, so we'll create one
+'''
+This callback is a data agumentation technique called mixup
+'''
 from functools import partial
 import torch
 from torch import tensor
