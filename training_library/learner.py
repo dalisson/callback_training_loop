@@ -43,14 +43,13 @@ class Learner(Runner):
     @classmethod
     def build_standard_learner(cls, model, data, loss_func, optim):
         '''
-            Build a runner using standard callbacks
+        Build a runner using standard callbacks
         '''
         return cls(model, data, loss_func, optim, cbs=STANDARD_CALLBACK_LIST)
 
     def lr_find(self, skip_last=5):
         '''
         Finds the best learning rate for model
-
         '''
         lrs = self.lr
         state_dicts = []
@@ -97,7 +96,9 @@ class Learner(Runner):
 
 
     def fit_exp(self, n_epochs, gamma=0.9):
-
+        '''
+        Fits on exponencial learning rate
+        '''
         lrs = self.lr
         sched_funcs = []
         for lr in lrs:
@@ -118,4 +119,7 @@ class Learner(Runner):
         self.add_callbacks([wandbc_b])
 
     def save_every_epoch(self, optimizer=False):
+        '''
+        Backup the model at each epoch
+        '''
         self.add_callbacks(SaveOnEpochEndCallback(optimizer=optimizer))
