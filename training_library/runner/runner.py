@@ -17,10 +17,11 @@ class Runner():
 
     '''
 
-    def __init__(self, model, data, loss_func, optim, lr, cbs=None):
+    def __init__(self, model, data, loss_func, optim, cbs=None):
         self.model, self.data, self.loss_func = model, data, loss_func
-        self.optim, self.lr = optim, lr
-        self.n_param_groups = 0
+        self.optim = optim
+        self.n_param_groups = len(optim.param_groups)
+        self.training_canceled = False
         self.y_hat, self.x_batch, self.y_batch, self.loss = None, None, None, None
         self.epoch, self.epochs = 0, 0
         self.metrics = dict()
@@ -116,17 +117,20 @@ class Runner():
             for epoch in range(epochs):
                 if self.begin_epoch(epoch):
                     self.in_train = True
+                    self.model.train()
                     self.all_batches()
                 with torch.no_grad():
                     self.dl = self.data.valid_dl
                     if self('begin_validate'):
                         self.in_train = False
+                        self.model.eval()
                         self.all_batches()
                 self('after_epoch')
         except CancelTrainException:
             self('after_cancel_train')
         finally:
             self('after_fit')
+            self.training_canceled = False
 
 
     def __call__(self, cb_name):
@@ -136,6 +140,20 @@ class Runner():
                 if not res and res is not None:
                     return False
         return True
+
+    @property
+    def lr(self):
+        lr = []
+        for pg in self.optim.param_groups:
+            lr.append(pg['lr'])
+        return lr
+
+    @lr.setter
+    def lr(self, new_lr):
+        if not isinstance(new_lr, (list, tuple)):
+            new_lr = [new_lr] * self.n_param_groups
+        for lr, pg in zip(new_lr, self.optim.param_groups):
+            pg['lr'] = lr
 
     def save(self, name=None, optimizer=False):
         '''

@@ -18,6 +18,7 @@ class LR_Find(Callback):
 
     def after_optim_step(self):
         if self.iter >= self.max_iter or self.loss > self.best_loss*10:
+            self.run.training_canceled = True
             raise CancelTrainException()
         if self.loss < self.best_loss:
             self.best_loss = self.loss

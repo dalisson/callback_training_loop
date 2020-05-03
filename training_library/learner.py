@@ -3,9 +3,7 @@ from .callbacks.cuda import CudaCallback
 from .callbacks.exceptions import DeviceException
 from .callbacks.lrfinder import LR_Find
 from .callbacks.recorder import RecorderCallback
-from .callbacks.modelsettings import SetTrainableModulesCallback,\
-                                     SetOptimizerCallback, SetTrainEvalCallback,\
-                                     Resnetse34
+
 
 from .callbacks.scheduler import ParamScheduler
 from .callbacks.scheduler import sched_lin, sched_cos, sched_exp, combine_scheds
@@ -19,25 +17,11 @@ from .runner import Runner
 
 __all__ = ['Learner']
 
-STANDARD_CALLBACK_LIST = [CudaCallback(), RecorderCallback(), SetTrainEvalCallback(),
-                          SetTrainableModulesCallback(), ProgressbarCallback(),
+STANDARD_CALLBACK_LIST = [CudaCallback(), RecorderCallback(), ProgressbarCallback(),
                           SplitLossCallback(), IgniteCallback()]
 
 class Learner(Runner):
 
-    @property
-    def learning_rate(self):
-        lr = []
-        for pg in self.optim.param_groups:
-            lr.append(pg['lr'])
-        return lr
-
-    @learning_rate.setter
-    def learning_rate(self, new_lr):
-        if not isinstance(new_lr, (list, tuple)):
-            new_lr = [new_lr] * self.n_param_groups
-        for lr, pg in zip(new_lr, self.optim.param_groups):
-            pg['lr'] = lr
     @property
     def device(self):
         '''
@@ -57,27 +41,17 @@ class Learner(Runner):
             raise DeviceException
 
     @classmethod
-    def build_standard_runner(cls, model, data, loss_func, optim='SGD', min_lr=1e-2, transpose=False):
+    def build_standard_learner(cls, model, data, loss_func, optim):
         '''
-            Build a runner using standard callbacks
+        Build a runner using standard callbacks
         '''
-        if optim.lower() == 'sgd':
-            optimizer = SGD
-            STANDARD_CALLBACK_LIST.append(SetOptimizerCallback(momentum=9e-1, weight_decay=5e-4))
-        elif optim.lower() == 'adam':
-            optimizer = Adam
-            STANDARD_CALLBACK_LIST.append(SetOptimizerCallback())
-
-        if transpose:
-            STANDARD_CALLBACK_LIST.append(Resnetse34())
-
-        return cls(model, data, loss_func, optimizer, min_lr, cbs=STANDARD_CALLBACK_LIST)
+        return cls(model, data, loss_func, optim, cbs=STANDARD_CALLBACK_LIST)
 
     def lr_find(self, skip_last=5):
         '''
         Finds the best learning rate for model
-
         '''
+        lrs = self.lr
         state_dicts = []
         state_dicts.extend([self.model.state_dict(), self.optim.state_dict()])
         if hasattr(self.loss_func, 'parameters'):
@@ -87,13 +61,12 @@ class Learner(Runner):
         # o  state dict deve voltar ao original
         for component, s_dict in zip([self.model, self.optim, self.loss_func], state_dicts):
             component.load_state_dict(s_dict)
-
+        self.lr = lrs
         self.remove_callback('lr_find')
         attr = getattr(self, 'recorder', None)
         if not attr:
             return 'recorder not found'
         attr.plot_lr_find(skip_last=skip_last)
-
 
     def fit_one_cycle(self, n_epochs, max_lr, divs=None, sched_type='cosine'):
         '''
@@ -108,7 +81,7 @@ class Learner(Runner):
         else:
             print('undefined schedule function')
             return
-        lrs = [group['lr'] for group in self.optim.param_groups]
+        lrs = self.lr
         if not isinstance(max_lr, list):
             max_lr = [max_lr] * self.n_param_groups
         assert len(max_lr) == self.n_param_groups
@@ -122,9 +95,11 @@ class Learner(Runner):
         super().fit(epochs=n_epochs, additional_cbs=sched_callback)
 
 
-    def fit_exp(self, n_epochs, gamma = 0.9):
-
-        lrs = self.learning_rate
+    def fit_exp(self, n_epochs, gamma=0.9):
+        '''
+        Fits on exponencial learning rate
+        '''
+        lrs = self.lr
         sched_funcs = []
         for lr in lrs:
             sched_funcs.append(sched_exp(lr, lr*(gamma**n_epochs)))
@@ -144,4 +119,7 @@ class Learner(Runner):
         self.add_callbacks([wandbc_b])
 
     def save_every_epoch(self, optimizer=False):
+        '''
+        Backup the model at each epoch
+        '''
         self.add_callbacks(SaveOnEpochEndCallback(optimizer=optimizer))

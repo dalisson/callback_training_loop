@@ -30,6 +30,9 @@ class ProgressbarCallback(Callback):
         self.pb.update(self.iter_in_dl)
 
     def after_all_batches(self):
+        if self.run.training_canceled:
+            self.mbar.write('Training cancelled at epoch %s - iter %s' % (self.run.epoch, self.run.iter))
+            return True
         stage = 'train' if self.run.in_train else 'eval'
         stats = 'Epoch {} - '.format(self.run.epoch)
         stats += stage + ': '
