@@ -1,4 +1,3 @@
-from torch.optim import SGD, Adam
 from .callbacks.cuda import CudaCallback
 from .callbacks.exceptions import DeviceException
 from .callbacks.lrfinder import LR_Find
@@ -21,7 +20,9 @@ STANDARD_CALLBACK_LIST = [CudaCallback(), RecorderCallback(), ProgressbarCallbac
                           SplitLossCallback(), IgniteCallback()]
 
 class Learner(Runner):
-
+    '''
+    The learner class
+    '''
     @property
     def device(self):
         '''
