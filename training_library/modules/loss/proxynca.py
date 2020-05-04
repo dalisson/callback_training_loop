@@ -1,5 +1,5 @@
 '''
-Implements the proxyNCA loss, used for training embeddings,
+Implements the proxyNCA loss, used for embedding learning,
 the main class uses label smoothing by default.
 '''
 
@@ -24,9 +24,9 @@ def binarize_and_smooth_labels(T, nb_classes, smoothing_const=0.1):
 class ProxyNCA(torch.nn.Module):
     '''
     Proxy_NCA Loss function
-
+    Warning!!! This class contains trainable parameters
     '''
-    def __init__(self, nb_classes, sz_embed, smoothing_const=0.1, softmax=F.log_softmax, **kwargs):
+    def __init__(self, nb_classes, sz_embed, smoothing_const=0.1, softmax=F.log_softmax):
         torch.nn.Module.__init__(self)
         self.proxies = torch.nn.Parameter(torch.randn(nb_classes, sz_embed) / 8)
         self.smoothing_const = smoothing_const

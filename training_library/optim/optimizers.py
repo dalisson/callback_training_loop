@@ -9,11 +9,23 @@ from ..utils import listfy
 
 __all__ = ['sgd', 'adam', 'lamb']
 
-def get_param_groups(net):
-    groups = []
-    for child in net.children():
-        groups.append(list(child.parameters()))
-    return groups
+def set_optim(parameters, optim_type, lr, **kwargs):
+    assert optim_type in ['sgd', 'adam', 'lamb'], 'Optimizer Not Implemented'
+    steps = [weight_decay_step]
+    lrs = listfy(lr)
+    if optim_type == 'sgd':
+        steps += [sgd_with_momentum_step]
+        stats = [AverageGradStat(dampening=False)]
+    elif optim_type == 'adam':
+        steps += [adam_step]
+        stats = [StepCountStat(), AverageGradStat(), AverageSqrGradStat()]
+    elif optim_type == 'lamb':
+        steps += [lamb_step]
+        stats = [StepCountStat(), AverageGradStat(), AverageSqrGradStat()]
+
+    optim = StatefulOptimizer(parameters, steps, stats, lr=lrs[0], **kwargs)
+    set_lr_for_groups(optim, lrs)
+    return optim
 
 def set_lr_for_groups(optim, lrs):
     n_groups = len(optim.param_groups)
@@ -24,39 +36,26 @@ def set_lr_for_groups(optim, lrs):
     for group, lr in zip(optim.param_groups, lrs):
         group['lr'] = lr
 
-def sgd(model, lr, mom=0, weight_decay=1e-5):
+def sgd(parameters, lr, mom=0, weight_decay=1e-5):
     '''
     Builds a sgd optimizer
     '''
-    lrs = listfy(lr)
-    optim = StatefulOptimizer(get_param_groups(model), [weight_decay_step, sgd_with_momentum_step],
-                              [AverageGradStat(dampening=False)], lr=lrs[0], mom=mom,
-                              wd=weight_decay)
-    set_lr_for_groups(optim, lrs)
-    return optim
 
-def adam(model, lr, betas: tuple = (9e-1, 99e-2), weight_decay=1e-5, eps=1e-6):
+    return set_optim(parameters, 'sgd', lr=lr, mom=mom, wd=weight_decay)
+
+
+def adam(parameters, lr, betas: tuple = (9e-1, 99e-2), weight_decay=1e-5, eps=1e-6):
     '''
     Builds the adam optimizer
     '''
-    lrs = listfy(lr)
     assert isinstance(betas, (tuple, list)) and len(betas) == 2
-    optim = StatefulOptimizer(get_param_groups(model), [weight_decay_step, adam_step],
-                              [StepCountStat(), AverageGradStat(), AverageSqrGradStat()],
-                              lr=lrs[0], mom=betas[0], sqr_mom=betas[1], wd=weight_decay,
-                              eps=eps)
-    set_lr_for_groups(optim, lrs)
-    return optim
+    return set_optim(parameters, 'adam', lr=lr, mom=betas[0],
+                     sqr_mom=betas[1], wd=weight_decay, eps=eps)
 
-def lamb(model, lr, betas: tuple = (9e-1, 99e-2), weight_decay=1e-5, eps=1e-6):
+def lamb(parameters, lr, betas: tuple = (9e-1, 99e-2), weight_decay=1e-5, eps=1e-6):
     '''
     Builds the adam optimizer
     '''
-    lrs = listfy(lr)
     assert isinstance(betas, (tuple, list)) and len(betas) == 2
-    optim = StatefulOptimizer(get_param_groups(model), [weight_decay_step, lamb_step],
-                              [StepCountStat(), AverageGradStat(), AverageSqrGradStat()],
-                              lr=lrs[0], mom=betas[0], sqr_mom=betas[1], wd=weight_decay,
-                              eps=eps)
-    set_lr_for_groups(optim, lrs)
-    return optim
+    return set_optim(parameters, 'lamb', lr=lr, mom=betas[0],
+                     sqr_mom=betas[1], wd=weight_decay, eps=eps)

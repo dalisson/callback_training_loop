@@ -18,7 +18,7 @@ class Optimizer():
         if not isinstance(self.params[0], list):
             self.params = [self.params]
         self.steppers = listfy(steppers)
-        self.param_groups = [{'params': param, **defaults} for param in self.params]
+        self.param_groups = [{'params': list(param), **defaults} for param in self.params]
 
     def grad_params(self):
         '''
