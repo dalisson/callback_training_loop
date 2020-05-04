@@ -1,1 +1,1 @@
-from .mixup import MixUpCallback
+from .mixupcallback import MixUpCallback

@@ -50,8 +50,9 @@ def reduce_loss(loss, reduction='mean'):
     return loss.mean() if reduction == 'mean' else loss.sum() if reduction == 'sum' else loss
 
 class MixUpCallback(Callback):
-    _order = 90 #Runs after normalization and cuda
+    order = 90 #Runs after normalization and cuda
     def __init__(self, α: float = 0.4):
+        super().__init__()
         self.distrib = Beta(tensor([α]), tensor([α]))
         self.old_loss_func = None
         self.λ, self.yb1 = None, None
