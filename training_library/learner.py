@@ -17,7 +17,7 @@ from .runner import Runner
 __all__ = ['Learner']
 
 STANDARD_CALLBACK_LIST = [CudaCallback(), RecorderCallback(), ProgressbarCallback(),
-                          SplitLossCallback(), IgniteCallback()]
+                          SplitLossCallback()]
 
 class Learner(Runner):
     '''
@@ -97,6 +97,12 @@ class Learner(Runner):
         self.remove_callback('paramscheduler')
         super().fit(epochs=n_epochs,
                     additional_cbs=ParamScheduler(pname='lr', sched_func=sched_funcs))
+
+    def add_softmax_metrics(self):
+        '''
+        Adds the accuracy, recall and precision when training on softmax
+        '''
+        self.add_callbacks(IgniteCallback())
 
     def wandb_logger(self, configs, project, name, entity='minds'):
         '''
