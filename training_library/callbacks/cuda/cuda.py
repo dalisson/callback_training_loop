@@ -14,9 +14,8 @@ class CudaCallback(Callback):
         sends the model to gpu
         '''
         if hasattr(self.run.loss_func, 'parameters'):
-            self.run.trainable_modules += self.run.loss_func
-        for module in self.run.trainable_modules:
-            module.to(self.device)
+            self.loss_func.to(self.device)
+        self.model.to(self.device)
 
     def begin_batch(self):
         '''

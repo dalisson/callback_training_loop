@@ -27,7 +27,6 @@ class Runner():
         self.metrics = dict()
         self.metrics['train'], self.metrics['eval'] = dict(), dict()
         self.dl = None
-        self.trainable_modules = [self.model]
         self.callbacks = []
         self.add_callbacks(cbs)
         self.iter = 0
