@@ -98,7 +98,7 @@ class Learner(Runner):
         super().fit(epochs=n_epochs,
                     additional_cbs=ParamScheduler(pname='lr', sched_func=sched_funcs))
 
-    def add_wandb(self, configs, project, name, entity='minds'):
+    def wandb_logger(self, configs, project, name, entity='minds'):
         '''
         Add callback to monitor project on wandb
         '''
@@ -119,6 +119,4 @@ class Learner(Runner):
         '''
         Set the training to mix precision floating points
         '''
-        attr = getattr(self, 'mixprecision', None)
-        if not attr:
-            self.add_callbacks(MixedPrecisionCallback(loss_scale, flat_master))
+        self.add_callbacks(MixedPrecisionCallback(loss_scale, flat_master))
