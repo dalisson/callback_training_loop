@@ -41,14 +41,12 @@ class Runner():
         adds callbacks to the runner callback list
         '''
         call_backs = listfy(call_backs)
-        cbs = []
         for c_b in call_backs:
             attr = getattr(self, c_b.name, None)
             if not attr:
-                cbs.append(c_b)
                 c_b.set_runner(self)
                 setattr(self, c_b.name, c_b)
-        self.callbacks += cbs
+                self.callbacks += [c_b]
 
     def remove_callback(self, cb_name):
         '''
