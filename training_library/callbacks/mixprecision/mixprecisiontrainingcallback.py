@@ -3,7 +3,7 @@ import torch
 from .utils import get_master, to_master_grads, to_model_params
 from ..callback import Callback
 
-class MixedPrecision(Callback):
+class MixedPrecisionCallback(Callback):
     order = 99
     def __init__(self, loss_scale=512, flat_master=False):
         super().__init__()

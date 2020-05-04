@@ -1,16 +1,16 @@
 from .callbacks.cuda import CudaCallback
 from .callbacks.exceptions import DeviceException
+from .callbacks.ignitecallback import IgniteCallback
 from .callbacks.lrfinder import LR_Find
 from .callbacks.recorder import RecorderCallback
-
-
+from .callbacks.mixprecision import MixedPrecisionCallback
 from .callbacks.scheduler import ParamScheduler
 from .callbacks.scheduler import sched_lin, sched_cos, sched_exp, combine_scheds
-from .callbacks.progress import ProgressbarCallback
 from .callbacks.splitloss import SplitLossCallback
-from .callbacks.wandbcallback import WandbCallback
-from .callbacks.ignitecallback import IgniteCallback
+from .callbacks.progress import ProgressbarCallback
 from .callbacks.savemodel import SaveOnEpochEndCallback
+from .callbacks.wandbcallback import WandbCallback
+
 from .runner import Runner
 
 
@@ -124,3 +124,11 @@ class Learner(Runner):
         Backup the model at each epoch
         '''
         self.add_callbacks(SaveOnEpochEndCallback(optimizer=optimizer))
+
+    def to_half(self, loss_scale=512, flat_master=False):
+        '''
+        Set the training to mix precision floating points
+        '''
+        attr = getattr(self, 'mixprecision', None)
+        if not attr:
+            self.add_callbacks(MixedPrecisionCallback(loss_scale, flat_master))
