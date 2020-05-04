@@ -13,6 +13,8 @@ class CudaCallback(Callback):
         '''
         sends the model to gpu
         '''
+        if hasattr(self.run.loss_func, 'parameters'):
+            self.run.trainable_modules += self.run.loss_func
         for module in self.run.trainable_modules:
             module.to(self.device)
 
