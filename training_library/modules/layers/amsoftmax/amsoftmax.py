@@ -33,7 +33,6 @@ class AMSoftmax(nn.Module):
     def _am_logsumexp(self, logits):
         '''
         logsumexp designed for am_softmax, the computation is numerically stable
-
         '''
         max_x = torch.max(logits, dim=-1)[0].unsqueeze(-1)
         term1 = (self.s*(logits - (max_x + self.m))).exp()

@@ -1,3 +1,9 @@
+'''
+Implements the proxyNCA loss, used for training embeddings,
+the main class uses label smoothing by default.
+'''
+
+
 import torch
 import torch.nn.functional as F
 from ...utils.functions import pairwise_distance
@@ -20,10 +26,11 @@ class ProxyNCA(torch.nn.Module):
     Proxy_NCA Loss function
 
     '''
-    def __init__(self, nb_classes, sz_embed, smoothing_const=0.1, **kwargs):
+    def __init__(self, nb_classes, sz_embed, smoothing_const=0.1, softmax=F.log_softmax, **kwargs):
         torch.nn.Module.__init__(self)
         self.proxies = torch.nn.Parameter(torch.randn(nb_classes, sz_embed) / 8)
         self.smoothing_const = smoothing_const
+        self.softmax = softmax
 
     def forward(self, X, T):
 
@@ -43,6 +50,6 @@ class ProxyNCA(torch.nn.Module):
 
         # cross entropy with distances as logits, one hot labels
         # note that compared to proxy nca, positive not excluded in denominator
-        loss = torch.sum(- T * F.log_softmax(D, -1), -1)
+        loss = torch.sum(- T * self.softmax(D, -1), -1)
 
         return loss.mean()
