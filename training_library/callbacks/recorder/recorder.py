@@ -40,7 +40,24 @@ class RecorderCallback(Callback):
         '''
         plt.plot(self.records['loss'])
 
+    def plot_metrics(self, figsize):
+        '''
+        Visualization for the model metrics
+        '''
+        n_rows = len(self.metrics['train'])
+        figsize = (8, 8) if not figsize else figsize
+        _, axes = plt.subplots(n_rows, 2, figsize=figsize)
+        keys = [(s, m) for s in self.metrics.keys() for m in self.metrics[s].keys()]
+        values = [self.metrics[stage][metric] for stage, metric in keys]
+        for i, ax in enumerate(axes.flatten()):
+            ax.plot(values[i])
+            ax.set_title('%s_%s' % keys[i])
+
     def plot_lr_find(self, skip_last=5):
+        '''
+        Plots the result of lr_finder
+        '''
+        assert len(self.records['loss']) > 0, 'No Records to Plot'
         n = len(self.records['loss'])-skip_last
         plt.plot(self.records['lr'][-1][:n], self.records['loss'][:n])
         plt.xscale('log')
