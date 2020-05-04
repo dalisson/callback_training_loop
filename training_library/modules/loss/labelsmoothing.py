@@ -20,7 +20,7 @@ def lin_comb(v1, v2, beta):
     '''
     return beta*v1 + (1-beta)*v2
 
-class LabelSmoothingCrossEntropy(nn.Module):
+class LabelSmoothingNllloss(nn.Module):
     '''
     Cross entropy with label smoothing
     '''
