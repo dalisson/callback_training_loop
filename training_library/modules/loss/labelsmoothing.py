@@ -29,7 +29,7 @@ class LabelSmoothingNLLLoss(nn.Module):
         self.e, self.reduction = e, reduction
 
     def forward(self, *inputs):
-        c = self.inputs[0].size()[-1]
+        c = inputs[0].size()[-1]
         loss = reduce_loss(-inputs[0].sum(dim=-1), reduction=self.reduction)
         nll = nll_loss(inputs[0], inputs[1], reduction=self.reduction)
         return lin_comb(loss/c, nll, self.e)
