@@ -18,7 +18,7 @@ def dictfy_pgs(p_groups, optim):
     '''
     Turns the parameters groups back into dictionaries
     '''
-    return [{'param' : pg, **{key : value for key, value in hypers.items() if key != 'params'}}
+    return [{'params' : pg, **{key : value for key, value in hypers.items() if key != 'params'}}
             for pg, hypers in zip(p_groups, optim.param_groups)]
 
 def get_master(opt, flat_master=False):
