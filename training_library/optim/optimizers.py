@@ -11,16 +11,15 @@ __all__ = ['sgd', 'adam', 'lamb']
 
 def set_optim(parameters, optim_type, lr, **kwargs):
     assert optim_type in ['sgd', 'adam', 'lamb'], 'Optimizer Not Implemented'
-    steps = [weight_decay_step]
     lrs = listfy(lr)
     if optim_type == 'sgd':
-        steps += [sgd_with_momentum_step]
+        steps = [sgd_with_momentum_step, weight_decay_step]
         stats = [AverageGradStat(dampening=False)]
     elif optim_type == 'adam':
-        steps += [adam_step]
+        steps = [adam_step, weight_decay_step]
         stats = [StepCountStat(), AverageGradStat(), AverageSqrGradStat()]
     elif optim_type == 'lamb':
-        steps += [lamb_step]
+        steps = [lamb_step]
         stats = [StepCountStat(), AverageGradStat(), AverageSqrGradStat()]
 
     optim = StatefulOptimizer(parameters, steps, stats, lr=lrs[0], **kwargs)
