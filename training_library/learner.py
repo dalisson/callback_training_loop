@@ -57,7 +57,7 @@ class Learner(Runner):
         if not attr:
             return 'recorder not found'
         attr.plot_lr_find(skip_last=skip_last)
-        self.remove_callback('lr_find')
+        self.remove_callback('lr_finder')
 
     def fit_one_cycle(self, n_epochs, max_lr, divs=None, sched_type='cosine'):
         '''
