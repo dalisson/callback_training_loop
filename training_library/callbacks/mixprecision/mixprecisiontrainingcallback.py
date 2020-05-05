@@ -15,7 +15,7 @@ class MixedPrecisionCallback(Callback):
         self.run.model = fp16.convert_network(self.model, dtype=torch.float16)
         self.model_pgs, self.master_pgs = get_master(self.optim, self.flat_master)
         #Changes the optimizer so that the optimization step is done in FP32.
-        self.run.opt.param_groups = self.master_pgs #Put those param groups inside our runner.
+        self.run.optim.param_groups = self.master_pgs #Put those param groups inside our runner.
 
     def after_fit(self):
         '''
