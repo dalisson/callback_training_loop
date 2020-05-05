@@ -1,7 +1,7 @@
 from .callbacks.cuda import CudaCallback
 from .callbacks.exceptions import DeviceException
 from .callbacks.ignitecallback import IgniteCallback
-from .callbacks.lrfinder import LR_Find
+from .callbacks.lrfinder import LR_Finder
 from .callbacks.recorder import RecorderCallback
 from .callbacks.mixprecision import MixedPrecisionCallback
 from .callbacks.scheduler import ParamScheduler
@@ -52,7 +52,7 @@ class Learner(Runner):
         '''
         Finds the best learning rate for model
         '''
-        self.fit(1, additional_cbs=[LR_Find()])
+        self.fit(1, additional_cbs=[LR_Finder()])
         attr = getattr(self, 'recorder', None)
         if not attr:
             return 'recorder not found'

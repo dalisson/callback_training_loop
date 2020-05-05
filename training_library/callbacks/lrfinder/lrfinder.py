@@ -1,10 +1,10 @@
 from ..callback import Callback
 from ..exceptions import CancelTrainException
 
-class LR_Find(Callback):
+class LR_Finder(Callback):
     order = 2
     def __init__(self, max_iter=100, min_lr=1e-6, max_lr=10):
-        super(LR_Find, self).__init__()
+        super(LR_Finder, self).__init__()
         self.max_iter, self.min_lr, self.max_lr = max_iter, min_lr, max_lr
         self.best_loss = 1e9
         self.state_dicts = []

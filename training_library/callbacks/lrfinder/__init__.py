@@ -1,1 +1,1 @@
-from .lrfinder import LR_Find
+from .lrfinder import LR_Finder
