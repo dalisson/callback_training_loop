@@ -1,2 +1,2 @@
-from .labelsmoothing import LabelSmoothingNllloss
+from .labelsmoothing import LabelSmoothingNLLLoss
 from .proxynca import ProxyNCA
