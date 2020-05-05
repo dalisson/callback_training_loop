@@ -4,6 +4,9 @@ from .utils import get_master, to_master_grads, to_model_params
 from ..callback import Callback
 
 class MixedPrecisionCallback(Callback):
+    '''
+    Callback allows training with mix precision floating points fp16 and fp32
+    '''
     order = 99
     def __init__(self, loss_scale=512, flat_master=False):
         super().__init__()
@@ -34,25 +37,25 @@ class MixedPrecisionCallback(Callback):
         '''
         The loss must be computed on fp32
         '''
-        self.run.pred = self.run.pred.float() #Compute the loss in FP32
+        self.run.y_hat = self.run.y_hat.float() #Compute the loss in FP32
     def after_loss(self):
         '''
         The loss must be scaled to avoid underflow in fp16
         '''
         self.run.loss *= self.loss_scale #Loss scaling to avoid gradient underflow
 
-    def after_backward(self):
+    def after_loss_backward(self):
         '''
         The loss must be copied to the master model (fp32 copy of model) and
         unscaled
         '''
         to_master_grads(self.model_pgs, self.master_pgs, self.flat_master)
         for master_params in self.master_pgs:
-            for param in master_params:
+            for param in master_params['params']:
                 if param.grad is not None:
                     param.grad.div_(self.loss_scale)
 
-    def after_step(self):
+    def after_optim_step(self):
         '''
         The optimizer is disconnected from the model so we must zero the gradients
         '''
