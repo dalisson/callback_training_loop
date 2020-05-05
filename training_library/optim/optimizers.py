@@ -19,7 +19,7 @@ def set_optim(parameters, optim_type, lr, **kwargs):
         steps = [adam_step, weight_decay_step]
         stats = [StepCountStat(), AverageGradStat(), AverageSqrGradStat()]
     elif optim_type == 'lamb':
-        steps = [lamb_step]
+        steps = [lamb_step, weight_decay_step]
         stats = [StepCountStat(), AverageGradStat(), AverageSqrGradStat()]
 
     optim = StatefulOptimizer(parameters, steps, stats, lr=lrs[0], **kwargs)
