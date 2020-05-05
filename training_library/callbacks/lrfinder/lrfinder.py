@@ -7,10 +7,11 @@ class LR_Find(Callback):
         super(LR_Find, self).__init__()
         self.max_iter, self.min_lr, self.max_lr = max_iter, min_lr, max_lr
         self.best_loss = 1e9
-        self.state_dict = []
-        self.initial_lrs = self.run.lr
+        self.state_dicts = []
+        self.initial_lrs = None
 
     def begin_fit(self):
+        self.initial_lrs = self.run.lr
         self.state_dicts.extend([self.model.state_dict(), self.optim.state_dict()])
         if hasattr(self.run.loss_func, 'parameters'):
             self.state_dicts.append(self.run.loss_func.state_dict())
