@@ -41,8 +41,8 @@ class Runner():
         '''
         call_backs = listfy(call_backs)
         for c_b in call_backs:
-            attr = getattr(self, c_b.name, None)
-            if not attr:
+            names = [cb.name for cb in self.callbacks]
+            if not c_b.name in names:
                 c_b.set_runner(self)
                 setattr(self, c_b.name, c_b)
                 self.callbacks += [c_b]
