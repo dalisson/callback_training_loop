@@ -13,10 +13,7 @@ class Optimizer():
     this class does not support optimizers with state
     '''
     def __init__(self, params, steppers, **defaults):
-        self.params = list(params)
-        #param_groups must be a list of lists
-        if not isinstance(self.params[0], list):
-            self.params = [self.params]
+        self.params = listfy(params)        
         self.steppers = listfy(steppers)
         self.param_groups = [{'params': list(param), **defaults} for param in self.params]
 
