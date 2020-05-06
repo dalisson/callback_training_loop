@@ -11,7 +11,7 @@ class NMICallback(Callback):
     '''
     A callback to calculate NMI
     '''
-    order = 100 
+    order = 9
     def begin_fit(self):
         for stage in self.metrics.keys():
             self.metrics[stage]['nmi'] = []
@@ -28,15 +28,19 @@ class NMICallback(Callback):
         '''
         compute the nmi at every batch
         '''
-        self.targets.extend(self.y_batch.detach().cpu().numpy())
-        self.emb.extend(self.y_hat.detach().cpu().numpy())
+        if not self.in_train:
+            self.targets.extend(self.y_batch.detach().cpu().numpy())
+            self.emb.extend(self.y_hat.detach().cpu().numpy())
 
     def after_all_batches(self):
         '''
         After all batches the metric is appended to the runner metrics
         '''
+        if not self.in_train:
 
-        nmi = calc_normalized_mutual_information(self.targets,
-                                                 cluster_by_kmeans(self.emb, self.n_classes))
-
-        self.metrics[self.stage]['nmi'].append(nmi)
+            nmi = calc_normalized_mutual_information(self.targets,
+                                                     cluster_by_kmeans(self.emb, self.n_classes))
+            self.metrics[self.stage]['nmi'].append(nmi)
+        else:
+            self.metrics[self.stage]['nmi'] = [0]
+        self.emb, self.targets = [], []
