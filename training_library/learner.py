@@ -118,8 +118,8 @@ class Learner(Runner):
         '''
         self.add_callback(SaveOnEpochEndCallback(optimizer=optimizer))
 
-    def half(self, loss_scale=512, dynamic=True, flat_master=False):
+    def half(self, loss_scale=512, dynamic=True, flat_master=False, **kwargs):
         '''
         Set the training to mix precision floating points
         '''
-        self.add_callback(MixedPrecisionCallback(loss_scale, flat_master, dynamic))
+        self.add_callback(MixedPrecisionCallback(loss_scale, flat_master, dynamic, **kwargs))
