@@ -14,6 +14,14 @@ import apex.fp16_utils as fp16
 import torch
 from torch.nn.utils import parameters_to_vector
 
+def grad_overflow(param_groups):
+    for group in param_groups:
+        for p in group['params']:
+            if p.grad is not None:
+                s = float(p.grad.data.float().sum())
+                if s == float('inf') or s == float('-inf') or s != s: return True
+    return False
+
 def dictfy_pgs(p_groups, optim):
     '''
     Turns the parameters groups back into dictionaries
