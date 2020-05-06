@@ -83,12 +83,13 @@ class Runner():
         finally:
             self('after_batch')
 
-    def all_batches(self):
+    def all_batches(self, dl):
         '''
         Does all batches in training loop
         '''
         try:
-            for x_batch, y_batch in self.dl:
+            self('begin_all_batches')
+            for x_batch, y_batch in dl:
                 self.one_batch(x_batch, y_batch)
         except CancelAllBatchesException:
             self('cancel_all_batches')
@@ -124,14 +125,14 @@ class Runner():
                     self.in_train = True
                     self.model.train()
                     self.stage = 0
-                    self.all_batches()
+                    self.all_batches(self.dl)
                 with torch.no_grad():
                     self.dl = self.data.valid_dl
                     if self('begin_validate'):
                         self.in_train = False
                         self.stage = 1
                         self.model.eval()
-                        self.all_batches()
+                        self.all_batches(self.dl)
                 self('after_epoch')
         except CancelTrainException:
             self('after_cancel_train')
