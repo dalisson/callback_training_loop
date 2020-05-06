@@ -29,14 +29,14 @@ class Runner():
         self.metrics = {stage : dict() for stage in self.stages}
         self.dl = None
         self.callbacks = []
-        self.add_callbacks(cbs)
+        self.add_callback(cbs)
         self.iter = 0
         self.total_iter = 0
         self.in_train = True
         self.current_stage = self.stages[0]
         self('init_config')
 
-    def add_callbacks(self, call_backs):
+    def add_callback(self, call_backs):
         '''
         adds callbacks to the runner callback list
         '''
@@ -116,7 +116,7 @@ class Runner():
         Does the fitting process
         '''
         if additional_cbs:
-            self.add_callbacks(additional_cbs)
+            self.add_callback(additional_cbs)
         try:
             self.begin_fit(epochs)
             for epoch in range(epochs):

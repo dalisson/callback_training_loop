@@ -99,7 +99,7 @@ class Learner(Runner):
         '''
         Adds the accuracy, recall and precision when training on softmax
         '''
-        self.add_callbacks(IgniteCallback())
+        self.add_callback(IgniteCallback())
 
     def wandb_logger(self, configs, project, name, entity='minds'):
         '''
@@ -110,16 +110,16 @@ class Learner(Runner):
                                  wandb_name=name,
                                  entity=entity)
         self.remove_callback('wandb')
-        self.add_callbacks([wandbc_b])
+        self.add_callback([wandbc_b])
 
     def save_every_epoch(self, optimizer=False):
         '''
         Backup the model at each epoch
         '''
-        self.add_callbacks(SaveOnEpochEndCallback(optimizer=optimizer))
+        self.add_callback(SaveOnEpochEndCallback(optimizer=optimizer))
 
     def half(self, loss_scale=512, flat_master=False):
         '''
         Set the training to mix precision floating points
         '''
-        self.add_callbacks(MixedPrecisionCallback(loss_scale, flat_master))
+        self.add_callback(MixedPrecisionCallback(loss_scale, flat_master))
