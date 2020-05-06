@@ -1,3 +1,7 @@
+'''
+Mother of all callbacks this is the basic callback class
+'''
+
 import re
 
 __all__ = ['Callback']

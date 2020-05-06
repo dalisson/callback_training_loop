@@ -25,14 +25,15 @@ class Runner():
         self.y_hat, self.x_batch, self.y_batch, self.loss = None, None, None, None
         self.epoch, self.epochs = 0, 0
         self.metrics = dict()
-        self.metrics['train'], self.metrics['eval'] = dict(), dict()
+        self.stages = ['train', 'eval']
+        self.metrics = {stage : dict() for stage in self.stages}
         self.dl = None
         self.callbacks = []
         self.add_callbacks(cbs)
         self.iter = 0
         self.total_iter = 0
         self.in_train = True
-
+        self.current_stage = self.stages[0]
         self('init_config')
 
     def add_callbacks(self, call_backs):
@@ -122,11 +123,13 @@ class Runner():
                 if self.begin_epoch(epoch):
                     self.in_train = True
                     self.model.train()
+                    self.stage = 0
                     self.all_batches()
                 with torch.no_grad():
                     self.dl = self.data.valid_dl
                     if self('begin_validate'):
                         self.in_train = False
+                        self.stage = 1
                         self.model.eval()
                         self.all_batches()
                 self('after_epoch')
@@ -158,6 +161,14 @@ class Runner():
             new_lr = [new_lr] * self.n_param_groups
         for lr, pg in zip(new_lr, self.optim.param_groups):
             pg['lr'] = lr
+
+    @property
+    def stage(self):
+        return self.current_stage
+
+    @stage.setter
+    def stage(self, new_index):
+        self.current_stage = self.stages[new_index]
 
     def save(self, name=None, optimizer=False):
         '''

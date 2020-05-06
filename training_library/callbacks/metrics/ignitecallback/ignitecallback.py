@@ -1,4 +1,4 @@
-from ..callback import Callback
+from ...callback import Callback
 from ignite.metrics import Accuracy, Recall, Precision
 
 class IgniteCallback(Callback):
@@ -18,9 +18,8 @@ class IgniteCallback(Callback):
             metric.update((self.run.y_hat, self.run.y_batch))
 
     def after_all_batches(self):
-        stage = 'train' if self.run.in_train else 'eval'
         for metric in self.metrics_classes:
-            self.run.metrics[stage][metric.__class__.__name__].append(metric.compute())
+            self.run.metrics[self.stage][metric.__class__.__name__].append(metric.compute())
         self.reset()
 
     def reset(self):
