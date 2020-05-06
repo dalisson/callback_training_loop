@@ -20,7 +20,7 @@ class RecorderCallback(Callback):
         self.records['lr'] = [[] for _ in range(n_groups)]
         self.records['loss'] = []
         self.records['batch_loss'] = []
-    
+
     def after_loss(self):
         '''
         Register parameters after calculating loss
@@ -28,8 +28,9 @@ class RecorderCallback(Callback):
         self.records['batch_loss'].append(self.run.loss.detach().cpu().numpy().item())
         #loss is not a moving mean with window of size 10
         self.records['loss'].append(mean(self.records['batch_loss'][-10:]))
-        for i, param_group in enumerate(self.optim.param_groups):
-            self.records['lr'][i].append(param_group['lr'])
+        if self.in_train:
+            for i, param_group in enumerate(self.optim.param_groups):
+                self.records['lr'][i].append(param_group['lr'])
 
     def plot_lr(self, param_group_id=-1):
         '''
