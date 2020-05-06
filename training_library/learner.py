@@ -1,6 +1,6 @@
 from .callbacks.cuda import CudaCallback
 from .callbacks.exceptions import DeviceException
-from .callbacks.ignitecallback import IgniteCallback
+from .callbacks.metrics import IgniteCallback
 from .callbacks.lrfinder import LR_Finder
 from .callbacks.recorder import RecorderCallback
 from .callbacks.mixprecision import MixedPrecisionCallback
