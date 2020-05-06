@@ -57,4 +57,4 @@ class ProxyNCA(torch.nn.Module):
     def to(self, *args, **kwargs):
         super().to(*args, **kwargs)
         dev = self.proxies.get_device()
-        self.device = dev if dev > 0 else 'cpu'
+        self.device = dev if dev >= 0 else 'cpu'
