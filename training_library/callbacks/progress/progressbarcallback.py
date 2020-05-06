@@ -18,7 +18,7 @@ class ProgressbarCallback(Callback):
         self.pb.update(self.iter_in_dl)
 
     def after_loss(self):
-        self.mbar.child.comment = 'Loss: {:.3f}'.format(self.run.loss.detach().cpu().numpy())
+        self.mbar.child.comment = 'Loss: {:.3f}'.format(self.recorder.records['loss'][-1])
 
     def after_batch(self):
         self.iter_in_dl += 1
