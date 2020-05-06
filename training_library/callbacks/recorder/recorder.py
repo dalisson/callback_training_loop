@@ -1,6 +1,6 @@
 from ..callback import Callback
 from ..imports import plt
-
+from statistics import mean
 
 class RecorderCallback(Callback):
     order = 10
@@ -19,12 +19,14 @@ class RecorderCallback(Callback):
         n_groups = len(self.run.optim.param_groups)
         self.records['lr'] = [[] for _ in range(n_groups)]
         self.records['loss'] = []
-
+        self.records['batch_loss'] = []
     def after_loss_backward(self):
         '''
         Register parameters after calculating loss
         '''
-        self.records['loss'].append(self.run.loss.detach().cpu().numpy().item())
+        self.records['batch_loss'].append(self.run.loss.detach().cpu().numpy().item())
+        #loss is not a moving mean with window of size 10
+        self.records['loss'].append(mean(self.records['batch_loss'][-10:]))
         for i, param_group in enumerate(self.optim.param_groups):
             self.records['lr'][i].append(param_group['lr'])
 

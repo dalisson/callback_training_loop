@@ -11,14 +11,7 @@ class NMICallback(Callback):
     '''
     A callback to calculate NMI
     '''
-    order = 100
-    def __init__(self, embedding_size=512):
-        super().__init__()
-        self.embedding_size = embedding_size
-        self.n_classes = 0
-        self.emb = None
-        self.targets = None
-
+    order = 100 
     def begin_fit(self):
         for stage in self.metrics.keys():
             self.metrics[stage]['nmi'] = []
@@ -27,16 +20,16 @@ class NMICallback(Callback):
         '''
         at the beginning of all batches
         '''
-        self.n_classes = self.data.n_classes
-        self.emb = [[] * self.embedding_size] * len(self.dl.dataset)
-        self.targets = [] * len(self.dl.dataset)
+        self.n_classes = len(self.dl.dataset.classes)
+        self.emb = []
+        self.targets = []
 
     def after_batch(self):
         '''
         compute the nmi at every batch
         '''
-        self.targets.extend(self.y_batch.detach().cpu())
-        self.emb.extend(self.y_hat.detach().cpu())
+        self.targets.extend(self.y_batch.detach().cpu().numpy())
+        self.emb.extend(self.y_hat.detach().cpu().numpy())
 
     def after_all_batches(self):
         '''
