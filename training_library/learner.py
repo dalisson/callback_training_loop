@@ -9,6 +9,7 @@ from .callbacks.scheduler import sched_lin, sched_cos, sched_exp, combine_scheds
 from .callbacks.splitloss import SplitLossCallback
 from .callbacks.progress import ProgressbarCallback
 from .callbacks.savemodel import SaveOnEpochEndCallback
+from .callbacks.skiptrain import SkipTrainCallback
 from .callbacks.wandbcallback import WandbCallback
 
 from .runner import Runner
@@ -117,6 +118,14 @@ class Learner(Runner):
         Backup the model at each epoch
         '''
         self.add_callback(SaveOnEpochEndCallback(optimizer=optimizer))
+
+    def eval(self):
+        '''
+        Run the model through one epoch in the eval dataset
+        '''
+        self.add_callback([SkipTrainCallback()])
+        self.fit(1)
+        self.remove_callback('skiptrain')
 
     def half(self, loss_scale=512, dynamic=True, flat_master=False, **kwargs):
         '''
