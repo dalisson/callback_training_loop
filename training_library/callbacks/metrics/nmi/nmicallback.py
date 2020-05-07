@@ -59,8 +59,4 @@ class NMIRecallCallback(Callback):
             for level, name in zip(self.recall_levels, self.recall_names):
                 r_at_k = calc_recall_at_k(self.targets, Y, level)
                 self.run.metrics[self.stage][name].append(r_at_k)
-        else:
-            for name in self.recall_names:
-                self.run.metrics[self.stage][name] = [0]
-            self.metrics[self.stage]['nmi'] = [0]
         self.emb, self.targets = [], []
