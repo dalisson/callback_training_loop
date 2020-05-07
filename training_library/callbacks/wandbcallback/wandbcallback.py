@@ -28,5 +28,6 @@ class WandbCallback(Callback):
         log = dict()
         for stage in self.run.metrics.keys():
             for key in self.run.metrics[stage].keys():
-                log[('%s_%s' % (stage, key))] = self.run.metrics[stage][key][-1]
+                if self.run.metrics[stage][key]:
+                    log[('%s_%s' % (stage, key))] = self.run.metrics[stage][key][-1]
         wandb.log(log)

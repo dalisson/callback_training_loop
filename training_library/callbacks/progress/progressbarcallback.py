@@ -36,7 +36,8 @@ class ProgressbarCallback(Callback):
         stats = 'Epoch {} - '.format(self.run.epoch)
         stats += self.stage + ': '
         for k in self.run.metrics[self.stage].keys():
-            stats += '{} - {:.2f} '.format(k, self.run.metrics[self.stage][k][-1])
+            if self.metrics[self.stage][k]:
+                stats += '{} - {:.2f} '.format(k, self.run.metrics[self.stage][k][-1])
             stats += '|'
         self.mbar.write(stats[:-2])
 
