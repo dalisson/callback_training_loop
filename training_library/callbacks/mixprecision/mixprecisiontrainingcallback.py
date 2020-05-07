@@ -13,7 +13,7 @@ class MixedPrecisionCallback(Callback):
     current version can use dynamic scaling for loss
     '''
     order = 99
-    def __init__(self, loss_scale=512, flat_master=False, dynamic=True, max_loss_scale=2.**24,
+    def __init__(self, loss_scale=512, flat_master=False, dynamic=True, max_loss_scale=2.**12,
                  div_factor=2., scale_wait=500):
         super().__init__()
         assert torch.backends.cudnn.enabled, "Mixed precision training requires cudnn."
