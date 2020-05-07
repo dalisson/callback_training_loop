@@ -2,6 +2,7 @@
 Callback to calculate the normalized mean information
 metric used for embedding learning
 '''
+import torch
 from ...callback import Callback
 from .utils import calc_normalized_mutual_information, cluster_by_kmeans,\
                    assign_by_euclidian_at_k, calc_recall_at_k
