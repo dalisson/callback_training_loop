@@ -1,2 +1,2 @@
 from .ignitecallback import IgniteCallback
-from .nmi import NMICallback
+from .nmi import NMIRecallCallback

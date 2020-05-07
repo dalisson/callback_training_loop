@@ -1,1 +1,1 @@
-from .nmicallback import NMICallback
+from .nmicallback import NMIRecallCallback
