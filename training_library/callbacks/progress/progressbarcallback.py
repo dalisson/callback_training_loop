@@ -33,11 +33,10 @@ class ProgressbarCallback(Callback):
         if self.run.training_canceled:
             self.mbar.write('Training cancelled at epoch %s - iter %s' % (self.run.epoch, self.run.iter))
             return True
-        stage = 'train' if self.run.in_train else 'eval'
         stats = 'Epoch {} - '.format(self.run.epoch)
-        stats += stage + ': '
-        for k in self.run.metrics[stage].keys():
-            stats += '{} - {:.2f} '.format(k, self.run.metrics[stage][k][-1])
+        stats += self.stage + ': '
+        for k in self.run.metrics[self.stage].keys():
+            stats += '{} - {:.2f} '.format(k, self.run.metrics[self.stage][k][-1])
             stats += '|'
         self.mbar.write(stats[:-2])
 
