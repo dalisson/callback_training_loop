@@ -14,7 +14,7 @@ class NMIRecallCallback(Callback):
     def __init__(self, recall_levels: list = [1, 2, 4, 8]):
         super().__init__()
         self.recall_levels = recall_levels
-        self.recall_names = [('recall@%s' %level) for level in recall_levels]
+        self.recall_names = ['recall@%s' %level for level in recall_levels]
         self.emb = []
         self.targets = []
 
