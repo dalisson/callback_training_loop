@@ -2,6 +2,7 @@ from collections import OrderedDict
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from functools import partial
 from ...modules.layers import VladPoolingLayer
 
 __all__ = ['VladNetwork']
@@ -119,24 +120,26 @@ class VladNetwork(nn.Module):
         #output is being normalized
         return F.normalize(input=output, p=2, dim=-1)
 
-    def _set_freeze(self, boolean: bool):
+    def _set_grad(self, m, b):
         '''
         Internal method for freezing and unfreezing encoder
         '''
-        for parameter in self.encoder.parameters():
-            parameter.requires_grad = boolean
+        if isinstance(m, (nn.BatchNorm2d)):
+            return
+        if hasattr(m, 'weight'):
+            for p in m.parameters(): p.requires_grad_(b)
 
     def freeze(self):
         '''
-        freezes encoder layer
+        freezes the network except for the batch norm layers
         '''
-        self._set_freeze(False)
+        self.apply(partial(self._set_grad, b=False))
 
     def unfreeze(self):
         '''
-        unfreezes encoder layer
+        unfreezes all network
         '''
-        self._set_freeze(True)
+        self.apply(partial(self._set_grad, b=False))
 
     @classmethod
     def load_keras_arch(cls, state_dict=None):

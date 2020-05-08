@@ -13,7 +13,7 @@ class IgniteCallback(Callback):
             for metric in self.metrics_classes:
                 self.run.metrics[key][metric.__class__.__name__] = []
 
-    def after_loss(self):
+    def after_pred(self):
         for metric in self.metrics_classes:
             metric.update((self.run.y_hat, self.run.y_batch))
 
