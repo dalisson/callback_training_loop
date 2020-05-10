@@ -139,7 +139,7 @@ class VladNetwork(nn.Module):
         '''
         unfreezes all network
         '''
-        self.apply(partial(self._set_grad, b=False))
+        self.apply(partial(self._set_grad, b=True))
 
     @classmethod
     def load_keras_arch(cls, state_dict=None):
