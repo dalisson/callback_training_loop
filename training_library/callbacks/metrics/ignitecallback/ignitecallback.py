@@ -19,10 +19,8 @@ class IgniteCallback(Callback):
 
     def after_all_batches(self):
         for metric in self.metrics_classes:
-            try:
+            if self.iter > 0:
                 self.run.metrics[self.stage][metric.__class__.__name__].append(metric.compute())
-            except:
-                self.run.metrics[self.stage][metric.__class__.__name__].append(0)
         self.reset()
 
     def reset(self):
