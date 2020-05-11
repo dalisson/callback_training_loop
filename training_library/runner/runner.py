@@ -101,8 +101,9 @@ class Runner():
         begin fitting process
         '''
         self.in_train = True
+        self.iter = 0
         self.epochs, self.loss = epochs, 0
-        self.total_iter = len(self.data.train_dl) * epochs
+        self.total_iter = (len(self.data.train_dl) + len(self.data.valid_dl)) * epochs
         return self('begin_fit')
 
     def begin_epoch(self, current_epoch):

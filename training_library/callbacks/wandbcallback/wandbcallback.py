@@ -31,3 +31,9 @@ class WandbCallback(Callback):
                 if self.run.metrics[stage][key]:
                     log[('%s_%s' % (stage, key))] = self.run.metrics[stage][key][-1]
         wandb.log(log)
+
+    def after_fit(self):
+        '''
+        wandb wont accept a model running twice
+        '''
+        self.run.remove_callback('wandb')
