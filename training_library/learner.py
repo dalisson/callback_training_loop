@@ -57,30 +57,22 @@ class Learner(Runner):
         getattr(self, 'recorder', None).plot_lr_find(skip_last=skip_last)
         self.remove_callback('lr_finder')
 
-    def fit_one_cycle(self, n_epochs, max_lr, divs=None, sched_type='cosine'):
+    def fit_one_cycle(self, n_epochs, max_lr, divs=None):
         '''
         One cycle fitting using cosine scheduling.
         '''
         divs = [0.3, 0.7] if not divs else divs
-        assert sum(divs) == 1
-        if sched_type == 'cosine':
-            sched_func = sched_cos
-        elif sched_type == 'linear':
-            sched_func = sched_lin
-        else:
-            print('undefined schedule function')
-            return
         lrs = self.lr
         if not isinstance(max_lr, list):
             max_lr = [max_lr] * self.n_param_groups
         assert len(max_lr) == self.n_param_groups
         sched_funcs = []
         for base_lr, m_lr in zip(lrs, max_lr):
-            func = combine_scheds(divs, [sched_func(base_lr, m_lr), sched_func(m_lr, base_lr*1e-1)])
+            func = combine_scheds(divs, [sched_cos(base_lr, m_lr), sched_cos(m_lr, base_lr*1e-1)])
             sched_funcs.append(func)
 
         sched_callback = ParamScheduler(pname='lr', sched_func=sched_funcs)
-        self.remove_callback('paramscheduler')
+        self.remove_callback('paramscheduler_lr')
         super().fit(epochs=n_epochs, additional_cbs=sched_callback)
 
 
@@ -92,7 +84,7 @@ class Learner(Runner):
         sched_funcs = []
         for lr in lrs:
             sched_funcs.append(sched_exp(lr, lr*(gamma**n_epochs)))
-        self.remove_callback('paramscheduler')
+        self.remove_callback('paramscheduler_lr')
         super().fit(epochs=n_epochs,
                     additional_cbs=ParamScheduler(pname='lr', sched_func=sched_funcs))
 
