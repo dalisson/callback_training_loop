@@ -2,10 +2,11 @@
 Base class for running the fully customizable training loop
 
 '''
+from functools import partial
 from ..callbacks.imports import torch
 from ..callbacks.exceptions import CancelAllBatchesException,\
                                    CancelBatchException, CancelTrainException
-from ..utils import listfy
+from ..utils import listfy, set_grad
 
 __all__ = ['Runner']
 __author__ = 'Dalisson Figueiredo'
@@ -201,3 +202,15 @@ class Runner():
         self.model.load_state_dict(checkpoint['model_state_dict'])
         if optimizer:
             self.optim.load_state_dict(checkpoint['optimizer_state_dict'])
+
+    def freeze(self):
+        '''
+        Freezes model layers
+        '''
+        self.model.apply(partial(set_grad, b=False))
+
+    def unfreeze(self):
+        '''
+        Unfreezes model layers
+        '''
+        self.model.apply(partial(set_grad, b=True))

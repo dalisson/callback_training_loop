@@ -54,7 +54,8 @@ class MixedPrecisionCallback(Callback):
         '''
         The loss must be scaled to avoid underflow in fp16
         '''
-        self.run.loss *= self.loss_scale #Loss scaling to avoid gradient underflow
+        if self.run.in_train:
+            self.run.loss *= self.loss_scale #Loss scaling to avoid gradient underflow
 
     def after_loss_backward(self):
         '''

@@ -124,7 +124,7 @@ class VladNetwork(nn.Module):
         '''
         Internal method for freezing and unfreezing encoder
         '''
-        if isinstance(m, (nn.BatchNorm2d)):
+        if isinstance(m, (nn.BatchNorm2d, nn.BatchNorm1d)):
             return
         if hasattr(m, 'weight'):
             for p in m.parameters(): p.requires_grad_(b)

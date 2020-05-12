@@ -1,2 +1,2 @@
-from .functions import listfy, compose
+from .functions import listfy, compose, set_grad
 from .customlist import CustomList

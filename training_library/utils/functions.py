@@ -64,3 +64,14 @@ def pairwise_distance(a, squared=False):
     pairwise_distances = torch.mul(pairwise_distances, mask_offdiagonals)
 
     return pairwise_distances
+
+def set_grad(m, b):
+    '''
+    Sets requires grad = bfor layers except for batchnorm layers
+        m: nn.module class
+        b: boolean 
+    '''
+    if isinstance(m, (torch.nn.BatchNorm2d, torch.nn.BatchNorm1d)):
+        return
+    if hasattr(m, 'weight'):
+        for p in m.parameters(): p.requires_grad_(b)
