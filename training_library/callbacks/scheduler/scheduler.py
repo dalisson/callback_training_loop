@@ -34,7 +34,7 @@ class ParamScheduler(Callback):
         '''
         if self.in_train:
             self.set_param()
-
+    @property
     def name(self):
-        base_name = super().name()
+        base_name = super().name
         return base_name+'_{}'.format(self.pname)
