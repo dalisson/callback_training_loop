@@ -74,7 +74,7 @@ class Learner(Runner):
         sched_callback = ParamScheduler(pname='lr', sched_func=sched_funcs)
         self.remove_callback('paramscheduler_lr')
         super().fit(epochs=n_epochs, additional_cbs=sched_callback)
-
+        self.remove_callback('paramscheduler_lr')
 
     def fit_exp(self, n_epochs, gamma=0.9):
         '''
@@ -87,6 +87,7 @@ class Learner(Runner):
         self.remove_callback('paramscheduler_lr')
         super().fit(epochs=n_epochs,
                     additional_cbs=ParamScheduler(pname='lr', sched_func=sched_funcs))
+        self.remove_callback('paramscheduler_lr')
 
     def add_softmax_metrics(self):
         '''
