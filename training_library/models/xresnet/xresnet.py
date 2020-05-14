@@ -83,32 +83,32 @@ class XResNet(nn.Sequential):
             *[ResBlock(expansion, ni if i == 0 else nf, nf, stride if i == 0 else 1)
               for i in range(n_blocks)])
 
-def xresnet18(**kwargs):
+def xresnet18(c_in=3, c_out=1000):
     '''
     Returns a XResnet with 18 layers
     '''
-    return XResNet.create(1, [2, 2,  2, 2], **kwargs)
+    return XResNet.create(1, [2, 2, 2, 2], c_in, c_out)
 
-def xresnet34(**kwargs):
+def xresnet34(c_in=3, c_out=1000):
     '''
     Returns a XResnet with 34 layers
     '''
-    return XResNet.create(1, [3, 4,  6, 3], **kwargs)
+    return XResNet.create(1, [3, 4, 6, 3], c_in, c_out)
 
-def xresnet50(**kwargs):
+def xresnet50(c_in=3, c_out=1000):
     '''
     Returns a XResnet with 50 layers
     '''
-    return XResNet.create(4, [3, 4,  6, 3], **kwargs)
+    return XResNet.create(4, [3, 4, 6, 3], c_in, c_out)
 
-def xresnet101(**kwargs):
+def xresnet101(c_in=3, c_out=1000):
     '''
     Returns a XResnet with 101 layers
     '''
-    return XResNet.create(4, [3, 4, 23, 3], **kwargs)
+    return XResNet.create(4, [3, 4, 23, 3], c_in, c_out)
 
-def xresnet152(**kwargs):
+def xresnet152(c_in=3, c_out=1000):
     '''
     Returns a XResnet with 152 layers
     '''
-    return XResNet.create(4, [3, 8, 36, 3], **kwargs)
+    return XResNet.create(4, [3, 8, 36, 3], c_in, c_out)
