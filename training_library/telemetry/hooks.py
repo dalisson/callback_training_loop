@@ -6,8 +6,11 @@ __all__ = ['Hook', 'Hooks', 'get_layers_stats', 'find_layers', 'layer_condition'
 class Hook():
     def __init__(self, f, layer):
         self.h = layer.register_forward_hook(partial(f, self))
+        self.layer_name = layer.__repr__()
     def __del__(self):
         self.remove()
+    def __repr__(self):
+        return self.layer_name
     def remove(self):
         '''
         removes hook
@@ -24,6 +27,9 @@ class Hooks(CustomList):
         return self
     def __exit__(self, *args):
         self.remove()
+
+    def __repr__(self):
+        return [hook.__repr__() for hook in self]
     def remove(self):
         '''
         Removes all hooks
