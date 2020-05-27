@@ -6,18 +6,18 @@ class VladPoolingLayer(nn.Module):
     '''
     Vlad Pooling layer, if ghost_clusters > 0 it becomes the ghost vlad
     '''
-    def __init__(self, n_clusters=8, g_clusters=2, d_dim=512):
+    def __init__(self, kernel_size, n_clusters=8, g_clusters=2, d_dim=512):
         super(VladPoolingLayer, self).__init__()
         self.output_dimension = d_dim * n_clusters
         self.n_clusters = n_clusters
         self.center_assignment = nn.Conv2d(in_channels=d_dim,
                                            out_channels=n_clusters+g_clusters,
-                                           kernel_size=(7, 1),
+                                           kernel_size=kernel_size,
                                            stride=(1, 1),
                                            bias=True)
         self.centroids = nn.Parameter(torch.rand(d_dim, n_clusters+g_clusters))
 
-        self.features = nn.Sequential(nn.Conv2d(d_dim, d_dim, (7, 1), stride=(1, 1), bias=True),
+        self.features = nn.Sequential(nn.Conv2d(d_dim, d_dim, kernel_size, stride=(1, 1), bias=True),
                                       nn.ReLU(inplace=True))
 
     def forward(self, *inputs):

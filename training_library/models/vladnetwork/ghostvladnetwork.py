@@ -147,7 +147,7 @@ class VladNetwork(nn.Module):
         loads model from file with the archtecture as the model from Keras
         '''
         encoder = ThinResnet()
-        vlad_layer = VladPoolingLayer(n_clusters=8, g_clusters=2, d_dim=512)
+        vlad_layer = VladPoolingLayer(kernel_size=(7, 1), n_clusters=8, g_clusters=2, d_dim=512)
         network = cls(encoder=encoder, vlad_pool=vlad_layer, bottleneck_dim=512)
         if state_dict:
             checkpoint = torch.load(state_dict)
@@ -159,7 +159,8 @@ class VladNetwork(nn.Module):
         '''
         Builds a network with user specified clusters and D dimension
         '''
-        vlad_layer = VladPoolingLayer(n_clusters=n_clusters, g_clusters=g_clusters, d_dim=d_dim)
+        vlad_layer = VladPoolingLayer(kernel_size=(7, 1), n_clusters=n_clusters,
+                                      g_clusters=g_clusters, d_dim=d_dim)
         network = cls(encoder=encoder, vlad_pool=vlad_layer, bottleneck_dim=output_dim)
 
         return network
