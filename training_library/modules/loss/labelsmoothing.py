@@ -22,7 +22,8 @@ def lin_comb(v1, v2, beta):
 
 class LabelSmoothingNLLLoss(nn.Module):
     '''
-    Cross entropy with label smoothing
+    NLLLoss with label smoothing
+    Warning!!! Softmax function must have been already applied to the inputs
     '''
     def __init__(self, e: float = 0.1, reduction='mean'):
         super().__init__()
