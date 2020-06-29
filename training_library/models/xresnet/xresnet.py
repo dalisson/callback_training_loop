@@ -3,6 +3,7 @@ The xresnet archtecture as presented on the bag of tricks paper
 '''
 import torch
 import torch.nn as nn
+from functools import partial
 
 
 def noop(x): return x
@@ -82,6 +83,27 @@ class XResNet(nn.Sequential):
         return nn.Sequential(
             *[ResBlock(expansion, ni if i == 0 else nf, nf, stride if i == 0 else 1)
               for i in range(n_blocks)])
+    
+    def _set_grad(self, m, b):
+        '''
+        Internal method for freezing and unfreezing encoder
+        '''
+        if isinstance(m, (nn.BatchNorm2d, nn.BatchNorm1d)):
+            return
+        if hasattr(m, 'weight'):
+            for p in m.parameters(): p.requires_grad_(b)
+
+    def freeze(self):
+        '''
+        freezes the network except for the batch norm layers
+        '''
+        self.apply(partial(self._set_grad, b=False))
+
+    def unfreeze(self):
+        '''
+        unfreezes all network
+        '''
+        self.apply(partial(self._set_grad, b=True))
 
 def xresnet18(c_in=3, c_out=1000):
     '''
