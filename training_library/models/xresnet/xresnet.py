@@ -84,7 +84,8 @@ class XResNet(nn.Sequential):
             *[ResBlock(expansion, ni if i == 0 else nf, nf, stride if i == 0 else 1)
               for i in range(n_blocks)])
 
-    def _set_grad(self, m, b):
+    @staticmethod
+    def _set_grad(m, b):
         '''
         Internal method for freezing and unfreezing encoder
         '''
