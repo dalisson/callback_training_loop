@@ -34,6 +34,7 @@ class LR_Finder(Callback):
     def after_fit(self):
         '''
         after fit the iteractions go back to zero
+        must restore state dicts and learning rates
         '''
          # o  state dict deve voltar ao original
         for item, s_dict in zip([self.model, self.optim, self.loss_func], self.state_dicts):
