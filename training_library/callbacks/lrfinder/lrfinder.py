@@ -13,8 +13,6 @@ class LR_Finder(Callback):
     def begin_fit(self):
         self.initial_lrs = self.run.lr
         self.state_dicts.extend([self.model.state_dict(), self.optim.state_dict()])
-        if hasattr(self.run.loss_func, 'parameters'):
-            self.state_dicts.append(self.run.loss_func.state_dict())
 
     def begin_batch(self):
         if not self.in_train:
@@ -37,7 +35,7 @@ class LR_Finder(Callback):
         must restore state dicts and learning rates
         '''
          # o  state dict deve voltar ao original
-        for item, s_dict in zip([self.model, self.optim, self.loss_func], self.state_dicts):
+        for item, s_dict in zip([self.model, self.optim], self.state_dicts):
             item.load_state_dict(s_dict)
         self.run.lr = self.initial_lrs
         self.run.iter = 0
