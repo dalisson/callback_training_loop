@@ -1,216 +1,135 @@
-'''
-Base class for running the fully customizable training loop
+import importlib
 
-'''
-from functools import partial
-from ..callbacks.imports import torch
-from ..callbacks.exceptions import CancelAllBatchesException,\
-                                   CancelBatchException, CancelTrainException
-from ..utils import listfy, set_grad
+ENABLE_HALF = False
+if importlib.util.find_spec('apex'):
+    ENABLE_HALF = True
+from ..callbacks.cuda import CudaCallback
+from ..callbacks.exceptions import DeviceException
+from ..callbacks.metrics import IgniteCallback
+from ..callbacks.lrfinder import LR_Finder
+from ..callbacks.recorder import RecorderCallback
+from ..callbacks.scheduler import ParamScheduler
+from ..callbacks.scheduler import sched_lin, sched_cos, sched_exp, combine_scheds
+from ..callbacks.progress import ProgressbarCallback
+from ..callbacks.savemodel import SaveOnEpochEndCallback
+from ..callbacks.skiptrain import SkipTrainCallback
+from ..callbacks.wandbcallback import WandbCallback
+
+from .base import BaseRunner
+
+
+if ENABLE_HALF:
+    from ..callbacks.mixprecision import MixedPrecisionCallback
+
 
 __all__ = ['Runner']
-__author__ = 'Dalisson Figueiredo'
 
+STANDARD_CALLBACK_LIST = [CudaCallback(), RecorderCallback(), ProgressbarCallback()]
 
-class Runner():
+class Runner(BaseRunner):
     '''
-    Handles a very customizable training loop through the use of callbacks
-
+    The learner class
     '''
-
-    def __init__(self, model, data, loss_func, optim, cbs=None):
-        self.model, self.data, self.loss_func = model, data, loss_func
-        self.optim = optim
-        self.n_param_groups = len(optim.param_groups)
-        self.training_canceled = False
-        self.y_hat, self.x_batch, self.y_batch, self.loss = None, None, None, None
-        self.epoch, self.epochs = 0, 0
-        self.metrics = dict()
-        self.stages = ['train', 'eval']
-        self.metrics = {stage : dict() for stage in self.stages}
-        self.dl = None
-        self.callbacks = []
-        self.add_callback(cbs)
-        self.iter = 0
-        self.total_iter = 0
-        self.in_train = True
-        self.current_stage = self.stages[0]
-        self('init_config')
-
-    def add_callback(self, call_backs):
-        '''
-        adds callbacks to the runner callback list
-        '''
-        call_backs = listfy(call_backs)
-        for c_b in call_backs:
-            names = [cb.name for cb in self.callbacks]
-            if not c_b.name in names:
-                c_b.set_runner(self)
-                setattr(self, c_b.name, c_b)
-                self.callbacks += [c_b]
-
-    def remove_callback(self, cb_name):
-        '''
-        removes a callback if present on runner
-        '''
-        if hasattr(self, cb_name):
-            delattr(self, cb_name)
-            self.callbacks = [cb for cb in self.callbacks if cb.name != cb_name]
-
-
-    def one_batch(self, x_b, y_b):
-        '''
-        Does batch of training loop
-
-        '''
-        try:
-            self.x_batch, self.y_batch = x_b, y_b
-            self('begin_batch')
-            self.y_hat = self.model(self.x_batch)
-            self('after_pred')
-            self.loss = self.loss_func(self.y_hat, self.y_batch)
-            self('after_loss')
-            #stops execution when we are on validation
-            if not self.in_train:
-                return True
-            self.loss.backward()
-            self('after_loss_backward')
-            self.optim.step()
-            self('after_optim_step')
-            self.optim.zero_grad()
-            self.iter += 1
-        except CancelBatchException:
-            self('cancel_batch')
-        finally:
-            self('after_batch')
-
-    def all_batches(self, dl):
-        '''
-        Does all batches in training loop
-        '''
-        try:
-            self('begin_all_batches')
-            for x_batch, y_batch in dl:
-                self.one_batch(x_batch, y_batch)
-        except CancelAllBatchesException:
-            self('cancel_all_batches')
-        finally:
-            self('after_all_batches')
-
-    def begin_fit(self, epochs):
-        '''
-        begin fitting process
-        '''
-        self.in_train = True
-        self.iter = 0
-        self.epochs, self.loss = epochs, 0
-        self.total_iter = (len(self.data.train_dl) + len(self.data.valid_dl)) * epochs
-        return self('begin_fit')
-
-    def begin_epoch(self, current_epoch):
-        '''
-        begin epoch
-        '''
-        self.epoch = current_epoch
-        self.dl = self.data.train_dl
-        return self('begin_epoch')
-
-    def fit(self, epochs, additional_cbs=None):
-        '''
-        Does the fitting process
-        '''
-        if additional_cbs:
-            self.add_callback(additional_cbs)
-        try:
-            self.begin_fit(epochs)
-            for epoch in range(epochs):
-                if self.begin_epoch(epoch):
-                    self.in_train = True
-                    self.model.train()
-                    self.stage = 0
-                    self.all_batches(self.dl)
-                with torch.no_grad():
-                    self.dl = self.data.valid_dl
-                    if self('begin_validate'):
-                        self.in_train = False
-                        self.stage = 1
-                        self.model.eval()
-                        self.all_batches(self.dl)
-                self('after_epoch')
-        except CancelTrainException:
-            self('after_cancel_train')
-        finally:
-            self('after_fit')
-            self.training_canceled = False
-
-
-    def __call__(self, cb_name):
-        for call_back in sorted(self.callbacks, key=lambda x: x.order):
-            if hasattr(call_back, cb_name):
-                res = call_back(cb_name)
-                if not res and res is not None:
-                    return False
-        return True
-
     @property
-    def lr(self):
-        lr = []
-        for pg in self.optim.param_groups:
-            lr.append(pg['lr'])
-        return lr
-
-    @lr.setter
-    def lr(self, new_lr):
-        if not isinstance(new_lr, (list, tuple)):
-            new_lr = [new_lr] * self.n_param_groups
-        for lr, pg in zip(new_lr, self.optim.param_groups):
-            pg['lr'] = lr
-
-    @property
-    def stage(self):
-        return self.current_stage
-
-    @stage.setter
-    def stage(self, new_index):
-        self.current_stage = self.stages[new_index]
-
-    def save(self, name=None, optimizer=False):
+    def device(self):
         '''
-        Saves a model state dict and optionally the associated optimizer
-            name: str - name of the model
-            optimizer: bool - when true also save the optimizer state dict
+        The device running the learner
         '''
-        if name is None:
-            name = 'model_e%s.' % self.epoch
-            for metric in self.metrics['eval'].keys():
-                name += '{}-{:.3f}.'.format(metric, self.metrics['eval'][metric][-1])
-            name += 'pth'
-        state_dict = dict()
-        state_dict['model_state_dict'] = self.model.state_dict()
-        if optimizer:
-            state_dict['optimizer_state_dict'] = self.optim.state_dict()
+        attr = getattr(self, 'cuda', None)
+        if attr:
+            return attr.device
+        return 'cpu'
 
-        torch.save(state_dict, name)
+    @device.setter
+    def device(self, new_device):
+        attr = getattr(self, 'cuda', None)
+        if attr:
+            attr.device = new_device
+        else:
+            raise DeviceException
 
-    def load(self, model, optimizer=False):
+    @classmethod
+    def build_standard_learner(cls, model, data, loss_func, optim):
         '''
-        Loads parameters to model and optimizer
-            name: Union[str, path] - model location
-            optimizer: bool - is optimizer state to be loaded from file
+        Build a runner using standard callbacks
         '''
-        checkpoint = torch.load(model)
-        self.model.load_state_dict(checkpoint['model_state_dict'])
-        if optimizer:
-            self.optim.load_state_dict(checkpoint['optimizer_state_dict'])
+        return cls(model, data, loss_func, optim, cbs=STANDARD_CALLBACK_LIST)
 
-    def freeze(self):
+    def lr_find(self, skip_last=5):
         '''
-        Freezes model layers
+        Finds the best learning rate for model
         '''
-        self.model.apply(partial(set_grad, b=False))
+        self.fit(1, additional_cbs=[LR_Finder()])
+        getattr(self, 'recorder', None).plot_lr_find(skip_last=skip_last)
+        self.remove_callback('lr_finder')
 
-    def unfreeze(self):
+    def fit_one_cycle(self, n_epochs, max_lr, divs=None):
         '''
-        Unfreezes model layers
+        One cycle fitting using cosine scheduling.
         '''
-        self.model.apply(partial(set_grad, b=True))
+        divs = [0.3, 0.7] if not divs else divs
+        lrs = self.lr
+        if not isinstance(max_lr, list):
+            max_lr = [max_lr] * self.n_param_groups
+        assert len(max_lr) == self.n_param_groups
+        sched_funcs = []
+        for base_lr, m_lr in zip(lrs, max_lr):
+            func = combine_scheds(divs, [sched_cos(base_lr, m_lr), sched_cos(m_lr, base_lr*1e-1)])
+            sched_funcs.append(func)
+
+        sched_callback = ParamScheduler(pname='lr', sched_func=sched_funcs)
+        self.remove_callback('paramscheduler_lr')
+        super().fit(epochs=n_epochs, additional_cbs=sched_callback)
+        self.remove_callback('paramscheduler_lr')
+
+    def fit_exp(self, n_epochs, gamma=0.9):
+        '''
+        Fits on exponencial learning rate
+        '''
+        lrs = self.lr
+        sched_funcs = []
+        for lr in lrs:
+            sched_funcs.append(sched_exp(lr, lr*(gamma**n_epochs)))
+        self.remove_callback('paramscheduler_lr')
+        super().fit(epochs=n_epochs,
+                    additional_cbs=ParamScheduler(pname='lr', sched_func=sched_funcs))
+        self.remove_callback('paramscheduler_lr')
+
+    def add_softmax_metrics(self):
+        '''
+        Adds the accuracy, recall and precision when training on softmax
+        '''
+        self.add_callback(IgniteCallback())
+
+    def wandb_logger(self, configs, project, name, entity='minds'):
+        '''
+        Add callback to monitor project on wandb
+        '''
+        wandbc_b = WandbCallback(configs=configs,
+                                 wandb_project=project,
+                                 wandb_name=name,
+                                 entity=entity)
+        self.remove_callback('wandb')
+        self.add_callback([wandbc_b])
+
+    def save_every_epoch(self, optimizer=False):
+        '''
+        Backup the model at each epoch
+        '''
+        self.add_callback(SaveOnEpochEndCallback(optimizer=optimizer))
+
+    def eval(self):
+        '''
+        Run the model through one epoch in the eval dataset
+        '''
+        self.add_callback([SkipTrainCallback()])
+        self.fit(1)
+        self.remove_callback('skiptrain')
+
+    def half(self, loss_scale=512, dynamic=True, flat_master=False, **kwargs):
+        '''
+        Set the training to mix precision floating points
+        '''
+        if not ENABLE_HALF:
+            return 'apex library not installed'
+        self.add_callback(MixedPrecisionCallback(loss_scale, flat_master, dynamic, **kwargs))
