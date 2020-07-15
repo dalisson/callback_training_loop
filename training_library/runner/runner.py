@@ -1,15 +1,11 @@
 import importlib
-
-ENABLE_HALF = False
-if importlib.util.find_spec('apex'):
-    ENABLE_HALF = True
 from ..callbacks.cuda import CudaCallback
 from ..callbacks.exceptions import DeviceException
 from ..callbacks.metrics import IgniteCallback
 from ..callbacks.lrfinder import LR_Finder
 from ..callbacks.recorder import RecorderCallback
 from ..callbacks.scheduler import ParamScheduler
-from ..callbacks.scheduler import sched_lin, sched_cos, sched_exp, combine_scheds
+from ..callbacks.scheduler import sched_cos, sched_exp, combine_scheds
 from ..callbacks.progress import ProgressbarCallback
 from ..callbacks.savemodel import SaveOnEpochEndCallback
 from ..callbacks.skiptrain import SkipTrainCallback
@@ -17,6 +13,10 @@ from ..callbacks.wandbcallback import WandbCallback
 
 from .base import BaseRunner
 
+
+ENABLE_HALF = False
+if importlib.util.find_spec('apex'):
+    ENABLE_HALF = True
 
 if ENABLE_HALF:
     from ..callbacks.mixprecision import MixedPrecisionCallback
