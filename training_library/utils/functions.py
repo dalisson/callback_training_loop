@@ -71,7 +71,7 @@ def set_grad(m, b):
         m: nn.module class
         b: boolean 
     '''
-    if isinstance(m, (torch.nn.BatchNorm2d, torch.nn.BatchNorm1d, torch.nn.Linear)):
+    if isinstance(m, (torch.nn.BatchNorm2d, torch.nn.BatchNorm1d)):
         return
     if hasattr(m, 'weight'):
         for p in m.parameters(): p.requires_grad_(b)
