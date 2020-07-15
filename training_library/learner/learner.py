@@ -1,9 +1,13 @@
+import importlib
+
+ENABLE_HALF = False
+if importlib.util.find_spec('apex'):
+    ENABLE_HALF = True
 from ..callbacks.cuda import CudaCallback
 from ..callbacks.exceptions import DeviceException
 from ..callbacks.metrics import IgniteCallback
 from ..callbacks.lrfinder import LR_Finder
 from ..callbacks.recorder import RecorderCallback
-from ..callbacks.mixprecision import MixedPrecisionCallback
 from ..callbacks.scheduler import ParamScheduler
 from ..callbacks.scheduler import sched_lin, sched_cos, sched_exp, combine_scheds
 from ..callbacks.progress import ProgressbarCallback
@@ -12,6 +16,10 @@ from ..callbacks.skiptrain import SkipTrainCallback
 from ..callbacks.wandbcallback import WandbCallback
 
 from ..runner import Runner
+
+
+if ENABLE_HALF:
+    from ..callbacks.mixprecision import MixedPrecisionCallback
 
 
 __all__ = ['Learner']
@@ -122,4 +130,6 @@ class Learner(Runner):
         '''
         Set the training to mix precision floating points
         '''
+        if not ENABLE_HALF:
+            return 'apex library not installed'
         self.add_callback(MixedPrecisionCallback(loss_scale, flat_master, dynamic, **kwargs))
