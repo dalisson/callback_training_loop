@@ -8,7 +8,7 @@ from ..callbacks.exceptions import CancelAllBatchesException,\
                                    CancelBatchException, CancelTrainException
 from ..utils import listfy, set_grad
 
-__all__ = ['Runner']
+__all__ = ['BaseRunner']
 __author__ = 'Dalisson Figueiredo'
 
 
