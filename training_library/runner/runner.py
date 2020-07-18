@@ -49,7 +49,7 @@ class Runner(BaseRunner):
             raise DeviceException
 
     @classmethod
-    def creat_standard_runner(cls, model, data, loss_func, optim):
+    def create_standard_runner(cls, model, data, loss_func, optim):
         '''
         Build a runner using standard callbacks
         '''
