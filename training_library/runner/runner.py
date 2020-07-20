@@ -77,10 +77,25 @@ class Runner(BaseRunner):
             func = combine_scheds(divs, [sched_cos(base_lr, m_lr), sched_cos(m_lr, base_lr*1e-1)])
             sched_funcs.append(func)
 
-        sched_callback = ParamScheduler(pname='lr', sched_func=sched_funcs)
+        lr_scheduler = ParamScheduler(pname='lr', sched_func=sched_funcs)
         self.remove_callback('paramscheduler_lr')
-        super().fit(epochs=n_epochs, additional_cbs=sched_callback)
-        self.remove_callback('paramscheduler_lr')
+        self.add_callback(lr_scheduler)
+
+        #momentum scheduling
+        sched_mom = True
+
+        if sched_mom:
+            sched_funcs = list()
+            base_moms = [param['mom'] for param in self.optim.param_groups]
+            for mom in base_moms:
+                func = combine_scheds(divs, [sched_cos(mom, mom*1e-1), sched_cos(mom*1e-1, mom)])
+                sched_funcs.append(func)
+
+            mom_scheduler = ParamScheduler(pname='mom', sched_func=sched_funcs)
+            self.remove_callback('paramscheduler_mom')
+            self.add_callback(mom_scheduler)
+
+        super().fit(epochs=n_epochs)
 
     def fit_exp(self, n_epochs, gamma=0.9):
         '''
