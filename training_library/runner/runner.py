@@ -63,7 +63,7 @@ class Runner(BaseRunner):
         getattr(self, 'recorder', None).plot_lr_find(skip_last=skip_last)
         self.remove_callback('lr_finder')
 
-    def fit_one_cycle(self, n_epochs, max_lr, divs=None):
+    def fit_one_cycle(self, n_epochs, max_lr, divs=None, sched_mom=True):
         '''
         One cycle fitting using cosine scheduling.
         '''
@@ -80,9 +80,7 @@ class Runner(BaseRunner):
         lr_scheduler = ParamScheduler(pname='lr', sched_func=sched_funcs)
         self.remove_callback('paramscheduler_lr')
         self.add_callback(lr_scheduler)
-
         #momentum scheduling
-        sched_mom = True
 
         if sched_mom:
             sched_funcs = list()
