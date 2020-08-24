@@ -17,8 +17,6 @@ from .base import BaseRunner
 ENABLE_HALF = False
 if importlib.util.find_spec('apex'):
     ENABLE_HALF = True
-
-if ENABLE_HALF:
     from ..callbacks.mixprecision import MixedPrecisionCallback
 
 
