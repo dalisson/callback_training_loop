@@ -45,6 +45,28 @@ class Data(object):
             n_classes = None
         return cls(dataloaders=dataloaders, n_classes=n_classes, data_type='audio')
 
+    def filter_classes_percentage(self, p=1, seed=42):
+        #set np seed
+        np.random.seed(seed)
+        classes = np.array([c for c in self.train_dl.dataset.class_to_idx.keys()])
+        trial = np.array(np.random.binomial(1, 1-p, len(classes)), dtype=bool)
+        removed_classes = {c : self.train_dl.dataset.class_to_idx[c] for c in classes[trial]}
+        self._filter_class_from_dataset(self.train_dl, removed_classes)
+        self._filter_class_from_dataset(self.valid_dl, removed_classes)
+
+    def _filter_class_from_dataset(self, dataloader, class_to_idx):
+        classes, idxs = class_to_idx.keys(), class_to_idx.values()
+        filtered_samples = [x for x in dataloader.dataset.samples if x[0].parent.stem not in idxs]
+        labels = [x[1] for x in filtered_samples]
+        filtered_class_to_idx = {c : i for c, i in dataloader.class_to_idx.items()\
+                                 if c not in classes}
+
+        #resetting the dataset
+        dataloader.dataset.samples = filtered_samples
+        dataloader.dataset.labels = labels
+        dataloader.dataset.class_to_idx = filtered_class_to_idx
+        dataloader.class_to_idx = filtered_class_to_idx
+
     def show_batch(self, **kwargs):
         '''
         Show a batch of samples
