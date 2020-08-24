@@ -94,6 +94,9 @@ class Runner(BaseRunner):
             self.add_callback(mom_scheduler)
 
         super().fit(epochs=n_epochs)
+        self.remove_callback('paramscheduler_lr')
+        if sched_mom:
+            self.remove_callback('paramscheduler_mom')
 
     def fit_exp(self, n_epochs, gamma=0.9):
         '''
