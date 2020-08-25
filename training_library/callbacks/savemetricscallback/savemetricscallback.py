@@ -29,5 +29,6 @@ class SaveMetricsCallback(Callback):
                 header += '{},'.format(result)
         header = header[:-1]
         with open(self.f, 'a') as save_file:
+            save_file.write("\n")
             save_file.write(header)
         
