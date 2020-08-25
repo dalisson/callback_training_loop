@@ -26,7 +26,7 @@ class SaveMetricsCallback(Callback):
         header = ''
         for stage in self.stages:
             for metric in self.metrics[stage].keys():
-                result = self.run.metrics[stage][metric]
+                result = self.run.metrics[stage][metric][-1]
                 header += '{},'.format(result)
         header = header[:-1]
         with open(self.f, 'a') as save_file:
