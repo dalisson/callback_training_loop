@@ -83,13 +83,13 @@ class Runner(BaseRunner):
 
         if sched_mom:
             sched_funcs = list()
-            base_moms = [param['mom'] for param in self.optim.param_groups]
+            base_moms = [param['momentum'] for param in self.optim.param_groups]
             for mom in base_moms:
                 func = combine_scheds(divs, [sched_cos(mom, min_mom), sched_cos(min_mom, mom)])
                 sched_funcs.append(func)
 
-            mom_scheduler = ParamScheduler(pname='mom', sched_func=sched_funcs)
-            self.remove_callback('paramscheduler_mom')
+            mom_scheduler = ParamScheduler(pname='momentum', sched_func=sched_funcs)
+            self.remove_callback('paramscheduler_momentum')
             self.add_callback(mom_scheduler)
 
         super().fit(epochs=n_epochs)
