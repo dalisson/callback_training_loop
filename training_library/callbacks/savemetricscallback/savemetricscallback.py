@@ -23,6 +23,7 @@ class SaveMetricsCallback(Callback):
         '''
         Save everything at the end of the epoch
         '''
+        header = ''
         for stage in self.stages:
             for metric in self.metrics[stage].keys():
                 result = self.run.metrics[stage][metric]
