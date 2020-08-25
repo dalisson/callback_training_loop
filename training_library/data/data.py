@@ -51,22 +51,31 @@ class Data(object):
         classes = np.array([c for c in self.train_dl.dataset.class_to_idx.keys()])
         trial = np.array(np.random.binomial(1, 1-p, len(classes)), dtype=bool)
         removed_classes = {c : self.train_dl.dataset.class_to_idx[c] for c in classes[trial]}
-        self._filter_class_from_dataset(self.train_dl, removed_classes)
-        self._filter_class_from_dataset(self.valid_dl, removed_classes)
+
+        remaining_classes = classes[(trial == False)]
+
+        new_class_to_idx = {c: i for i, c in enumerate(remaining_classes)}
+
+        self._filter_class_from_dataset(self.train_dl, removed_classes, new_class_to_idx)
+        self._filter_class_from_dataset(self.valid_dl, removed_classes, new_class_to_idx)
         self.n_classes = len(self.train_dl.dataset.class_to_idx.keys())
 
-    def _filter_class_from_dataset(self, dataloader, class_to_idx):
-        classes, idxs = class_to_idx.keys(), class_to_idx.values()
+    def _filter_class_from_dataset(self, dataloader, class_to_idx, new_class_to_idx):
+        classes = class_to_idx.keys()
         filtered_samples = [x for x in dataloader.dataset.samples if x[0].split('/')[-2] not in classes]
-        labels = [x[1] for x in filtered_samples]
-        filtered_class_to_idx = {c : i for c, i in dataloader.dataset.class_to_idx.items()\
-                                 if c not in classes}
+
+
+        reversed_c_to_idx = {i : k for k, i in dataloader.dataset.class_to_idx.items()}
+        label1 = [x[1] for x in filtered_samples]
+
+        label_classes = [reversed_c_to_idx[l] for l in label1]
+        labels = [new_class_to_idx[l] for l in label_classes]
 
         #resetting the dataset
         dataloader.dataset.samples = filtered_samples
         dataloader.dataset.labels = labels
-        dataloader.dataset.class_to_idx = filtered_class_to_idx
-        dataloader.class_to_idx = filtered_class_to_idx
+        dataloader.dataset.class_to_idx = new_class_to_idx
+        dataloader.class_to_idx = new_class_to_idx
 
     def show_batch(self, **kwargs):
         '''
