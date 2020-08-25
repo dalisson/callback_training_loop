@@ -10,6 +10,7 @@ from ..callbacks.progress import ProgressbarCallback
 from ..callbacks.savemodel import SaveOnEpochEndCallback
 from ..callbacks.skiptrain import SkipTrainCallback
 from ..callbacks.wandbcallback import WandbCallback
+from ..callbacks.savemetricscallback import SaveMetricsCallback
 
 from .base import BaseRunner
 
@@ -147,3 +148,8 @@ class Runner(BaseRunner):
         if not ENABLE_HALF:
             return 'apex library not installed'
         self.add_callback(MixedPrecisionCallback(loss_scale, flat_master, dynamic, **kwargs))
+
+    def add_csv_logger(self, f):
+        self.remove_callback('savemetrics')
+        cb = SaveMetricsCallback(f)
+        self.add_callback(cb)
