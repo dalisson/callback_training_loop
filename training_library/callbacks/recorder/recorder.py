@@ -18,7 +18,7 @@ class RecorderCallback(Callback):
         '''
         n_groups = len(self.run.optim.param_groups)
         self.records['lr'] = [[] for _ in range(n_groups)]
-        self.records['mom'] = [[] for _ in range(n_groups)]
+        self.records['momentum'] = [[] for _ in range(n_groups)]
         self.records['loss'] = []
         self.records['batch_loss'] = []
 
@@ -33,9 +33,9 @@ class RecorderCallback(Callback):
             for i, param_group in enumerate(self.optim.param_groups):
                 self.records['lr'][i].append(param_group['lr'])
                 try:
-                    self.records['mom'][i].append(param_group['mom'])
+                    self.records['momentum'][i].append(param_group['momentum'])
                 except:
-                    self.records['mom'][i].append(0)
+                    self.records['momentum'][i].append(0)
 
     def plot_lr(self, param_group_id=-1):
         '''
@@ -43,11 +43,11 @@ class RecorderCallback(Callback):
         '''
         plt.plot(self.records['lr'][param_group_id])
 
-    def plot_mom(self, param_group_id=-1):
+    def plot_momentum(self, param_group_id=-1):
         '''
-        Plots the momentum of a given param_group
+        Plots the momentumentum of a given param_group
         '''
-        plt.plot(self.records['mom'][param_group_id])
+        plt.plot(self.records['momentum'][param_group_id])
 
     def plot_loss(self):
         '''
