@@ -71,9 +71,13 @@ class Data(object):
         label_classes = [reversed_c_to_idx[l] for l in label1]
         labels = [new_class_to_idx[l] for l in label_classes]
 
+        sample_location = [x[0] for x in filtered_samples]
+
+        
+        assert len(sample_location) == len(labels)
         #resetting the dataset
-        dataloader.dataset.samples = filtered_samples
-        dataloader.dataset.labels = labels
+        dataloader.dataset.samples = [(x, y) for x, y in zip(sample_location, labels)]
+        dataloader.dataset.targets = labels
         dataloader.dataset.class_to_idx = new_class_to_idx
         dataloader.class_to_idx = new_class_to_idx
 
