@@ -127,13 +127,13 @@ class BaseRunner():
                 if self.begin_epoch(epoch):
                     self.in_train = True
                     self.model.train()
-                    self.stage = self.stages[0]
+                    self.stage = 0
                     self.all_batches(self.dl)
                 with torch.no_grad():
                     self.dl = self.data.valid_dl
                     if self('begin_validate'):
                         self.in_train = False
-                        self.stage = self.stages[1]
+                        self.stage = 1
                         self.model.eval()
                         self.all_batches(self.dl)
                 self('after_epoch')
