@@ -53,12 +53,13 @@ class Data(object):
         removed_classes = {c : self.train_dl.dataset.class_to_idx[c] for c in classes[trial]}
         self._filter_class_from_dataset(self.train_dl, removed_classes)
         self._filter_class_from_dataset(self.valid_dl, removed_classes)
+        self.n_classes = len(self.train_dl.dataset.class_to_idx.keys())
 
     def _filter_class_from_dataset(self, dataloader, class_to_idx):
         classes, idxs = class_to_idx.keys(), class_to_idx.values()
-        filtered_samples = [x for x in dataloader.dataset.samples if x[0].parent.stem not in idxs]
+        filtered_samples = [x for x in dataloader.dataset.samples if x[0].split('/')[-2] not in classes]
         labels = [x[1] for x in filtered_samples]
-        filtered_class_to_idx = {c : i for c, i in dataloader.class_to_idx.items()\
+        filtered_class_to_idx = {c : i for c, i in dataloader.dataset.class_to_idx.items()\
                                  if c not in classes}
 
         #resetting the dataset
