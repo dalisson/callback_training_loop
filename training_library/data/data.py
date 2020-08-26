@@ -15,14 +15,16 @@ class Data(object):
         self.data_type = data_type   
 
     @classmethod
-    def from_audio_images(cls, train_dir, test_dir, b_size, data_aug=True):
+    def from_audio_images(cls, train_dir, test_dir, b_size, data_aug=True, drop_last=False):
         '''
         Builds Data class for audio images to be used with Softmax
         '''
         dataloaders = build_softmax_image_dataloader(train_dir=train_dir,
                                                      test_dir=test_dir,
                                                      batch_size=b_size,
-                                                     data_augmentation=data_aug)
+                                                     data_augmentation=data_aug,
+                                                     drop_last=drop_last)
+
         classes = getattr(dataloaders[0], 'idx_to_class', None)
         if classes:
             n_classes = len(list(classes.keys()))

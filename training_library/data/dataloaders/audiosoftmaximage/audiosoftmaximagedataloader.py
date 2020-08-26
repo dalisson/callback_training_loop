@@ -22,7 +22,7 @@ def load_images_softmax(x, load_from_wav=False, gain_augmentation=False):
 
     return np.expand_dims(img, 0)
 
-def build_dataloaders(train_dir, test_dir, batch_size, data_augmentation = True):
+def build_dataloaders(train_dir, test_dir, batch_size, data_augmentation=True, drop_last=False):
     if data_augmentation:
         softmax_transforms_train = transforms.Compose([
                 random_inversion, 
@@ -57,7 +57,8 @@ def build_dataloaders(train_dir, test_dir, batch_size, data_augmentation = True)
 
     train_softmax_loader = torch.utils.data.DataLoader(train_softmax_dataset,
                                                        batch_size=batch_size,
-                                                       shuffle=True)
+                                                       shuffle=True,
+                                                       drop_last=drop_last)
 
     test_softmax_dataset = datasets.DatasetFolder(test_dir,
                                                   transform=softmax_transforms_test,
@@ -66,7 +67,8 @@ def build_dataloaders(train_dir, test_dir, batch_size, data_augmentation = True)
 
     test_softmax_loader = torch.utils.data.DataLoader(test_softmax_dataset,
                                                       batch_size=batch_size,
-                                                      shuffle=False)
+                                                      shuffle=False,
+                                                      drop_last=drop_last)
 
     train_softmax_loader.idx_to_class = {i: c for c, i in train_softmax_dataset.class_to_idx.items()}
     test_softmax_loader.idx_to_class = {i: c for c, i in test_softmax_dataset.class_to_idx.items()}
