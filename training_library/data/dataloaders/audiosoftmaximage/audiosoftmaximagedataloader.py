@@ -68,7 +68,7 @@ def build_dataloaders(train_dir, test_dir, batch_size, data_augmentation=True, d
     test_softmax_loader = torch.utils.data.DataLoader(test_softmax_dataset,
                                                       batch_size=batch_size,
                                                       shuffle=False,
-                                                      drop_last=drop_last)
+                                                      drop_last=False)
 
     train_softmax_loader.idx_to_class = {i: c for c, i in train_softmax_dataset.class_to_idx.items()}
     test_softmax_loader.idx_to_class = {i: c for c, i in test_softmax_dataset.class_to_idx.items()}
