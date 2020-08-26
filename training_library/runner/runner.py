@@ -62,7 +62,7 @@ class Runner(BaseRunner):
         getattr(self, 'recorder', None).plot_lr_find(skip_last=skip_last)
         self.remove_callback('lr_finder')
 
-    def fit_one_cycle(self, n_epochs, max_lr, divs=None, sched_mom=True, min_mom=0.85):
+    def fit_one_cycle(self, n_epochs, max_lr, divs=None, sched_mom=True, min_mom=0.85, supress_progress=False):
         '''
         One cycle fitting using cosine scheduling.
         '''
@@ -92,12 +92,15 @@ class Runner(BaseRunner):
             self.remove_callback('paramscheduler_momentum')
             self.add_callback(mom_scheduler)
 
+        if supress_progress:
+            self.remove_callback('progressbar')
+
         super().fit(epochs=n_epochs)
         self.remove_callback('paramscheduler_lr')
         if sched_mom:
             self.remove_callback('paramscheduler_mom')
 
-    def fit_exp(self, n_epochs, gamma=0.9):
+    def fit_exp(self, n_epochs, gamma=0.9, supress_progress=False):
         '''
         Fits on exponencial learning rate
         '''
@@ -106,6 +109,9 @@ class Runner(BaseRunner):
         for lr in lrs:
             sched_funcs.append(sched_exp(lr, lr*(gamma**n_epochs)))
         self.remove_callback('paramscheduler_lr')
+
+        if supress_progress:
+            self.remove_callback('progressbar')
         super().fit(epochs=n_epochs,
                     additional_cbs=ParamScheduler(pname='lr', sched_func=sched_funcs))
         self.remove_callback('paramscheduler_lr')
