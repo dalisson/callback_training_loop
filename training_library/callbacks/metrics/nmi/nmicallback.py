@@ -25,9 +25,13 @@ class NMIRecallCallback(Callback):
         '''
         for stage in self.metrics.keys():
             self.metrics[stage]['nmi'] = []
+            if stage == 'train':
+                self.metrics[stage]['nmi'] = [0]
             for name in self.recall_names:
                 self.metrics[stage][name] = []
-
+                if stage == 'train':
+                    self.metrics[stage][name] = [0]
+            
     def begin_all_batches(self):
         '''
         at the beginning of all batches
