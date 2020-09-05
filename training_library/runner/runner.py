@@ -72,7 +72,7 @@ class Runner(BaseRunner):
         self.add_callback(parallel_cb)
         self.fit = partial(self._launch_trainers, n_gpus=n_gpus)
 
-    def _launch_trainers(self, n_gpus, epochs, additional_cbs):
+    def _launch_trainers(self, n_gpus, epochs, additional_cbs=None):
         mp.spawn(self._multprocess_fit,
                  args=(epochs, additional_cbs, ),
                  nprocs=n_gpus,
