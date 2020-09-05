@@ -9,11 +9,11 @@ class Data(object):
 
     '''
 
-    def __init__(self, dataloaders, n_classes=None, data_type='img'):
+    def __init__(self, dataloaders, bs, n_classes=None, data_type='img'):
         self.train_dl, self.valid_dl = dataloaders
         self.n_classes = n_classes
         self.data_type = data_type  
-        self.bs = None 
+        self.bs = bs
 
     @classmethod
     def from_audio_images(cls, train_dir, test_dir, b_size, data_aug=True, drop_last=False):
@@ -25,14 +25,14 @@ class Data(object):
                                                      batch_size=b_size,
                                                      data_augmentation=data_aug,
                                                      drop_last=drop_last)
-        self.bs = b_size
+    
 
         classes = getattr(dataloaders[0], 'idx_to_class', None)
         if classes:
             n_classes = len(list(classes.keys()))
         else:
             n_classes = None
-        return cls(dataloaders=dataloaders, n_classes=n_classes, data_type='img')
+        return cls(dataloaders=dataloaders, bs=b_size, n_classes=n_classes, data_type='img')
 
     @classmethod
     def from_audio(cls, train_dir, test_dir, b_size):
