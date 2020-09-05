@@ -6,12 +6,12 @@ import os
 from ..callback import Callback
 
 
-class ParallelTrainer(Callback):
+class ParallelTrainerCallback(Callback):
     #run_after,run_before = TrainEvalCallback,Recorder
     # for `find_unused_parameters` in DistributedDataParallel()
     order = 0
     def __init__(self, n_devices=2):
-        super(ParallelTrainer, self).__init__()
+        super(ParallelTrainerCallback, self).__init__()
         self.old_dl = None
         self.world_size = n_devices
 
