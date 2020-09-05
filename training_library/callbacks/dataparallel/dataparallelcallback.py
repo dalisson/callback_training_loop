@@ -1,7 +1,6 @@
 import torch.distributed as dist
 from torch.utils.data.distributed import DistributedSampler
-import torch.nn as nn
-import torch.nn.DistributedDataParallel as DistributedDataParallel 
+from torch.nn.parallel import DistributedDataParallel
 from torch.utils.data import DataLoader
 import os
 from ..callback import Callback
