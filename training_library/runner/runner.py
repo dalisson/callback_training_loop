@@ -4,6 +4,7 @@ from functools import partial
 import torch.multiprocessing as mp
 
 from ..callbacks.cuda import CudaCallback
+from ..callbacks.dataparallel import ParallelTrainerCallback
 from ..callbacks.exceptions import DeviceException
 from ..callbacks.metrics import IgniteCallback
 from ..callbacks.lrfinder import LR_Finder
@@ -67,6 +68,8 @@ class Runner(BaseRunner):
 
     def distribute_learner(self, device_ids):
         n_gpus = len(device_ids)
+        parallel_cb = ParallelTrainerCallback(n_devices=n_gpus)
+        self.add_callback(parallel_cb)
         self.fit = partial(self._launch_trainers, n_gpus=n_gpus)
 
     def _launch_trainers(self, n_gpus, n_epochs, additional_cbs):
