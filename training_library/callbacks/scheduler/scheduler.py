@@ -70,7 +70,7 @@ def combine_scheds(pcts, scheds):
 
 
 
-def one_cycle_scheduler(divs, lrs, n_param_groups, max_lr, min_mom=0.85, mom=0.95, sched_mom=True):
+def one_cycle_scheduler(lrs, n_param_groups, max_lr, min_mom=0.85, mom=0.95, sched_mom=True, divs=None):
     divs = [0.3, 0.7] if not divs else divs
     if not isinstance(max_lr, list):
         max_lr = [max_lr] * n_param_groups
