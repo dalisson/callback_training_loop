@@ -72,15 +72,15 @@ class Runner(BaseRunner):
         self.add_callback(parallel_cb)
         self.fit = partial(self._launch_trainers, n_gpus=n_gpus)
 
-    def _launch_trainers(self, n_gpus, n_epochs, additional_cbs):
+    def _launch_trainers(self, n_gpus, epochs, additional_cbs):
         mp.spawn(self._multprocess_fit,
-                 args=(n_epochs, additional_cbs, ),
+                 args=(epochs, additional_cbs, ),
                  nprocs=n_gpus,
                  join=True)
 
-    def _multprocess_fit(self, gpu, n_epochs, additional_cbs):
+    def _multprocess_fit(self, gpu, epochs, additional_cbs):
         self.device = gpu
-        super().fit(n_epochs, additional_cbs=additional_cbs)
+        super().fit(epochs, additional_cbs=additional_cbs)
 
     def lr_find(self, skip_last=5):
         '''
