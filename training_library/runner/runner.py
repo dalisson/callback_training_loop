@@ -1,11 +1,14 @@
 import importlib
+from functools import partial
+
+import torch.multiprocessing as mp
+
 from ..callbacks.cuda import CudaCallback
 from ..callbacks.exceptions import DeviceException
 from ..callbacks.metrics import IgniteCallback
 from ..callbacks.lrfinder import LR_Finder
 from ..callbacks.recorder import RecorderCallback
-from ..callbacks.scheduler import ParamScheduler
-from ..callbacks.scheduler import sched_cos, sched_exp, combine_scheds
+from ..callbacks.scheduler import one_cycle_scheduler, exp_scheduler
 from ..callbacks.progress import ProgressbarCallback
 from ..callbacks.savemodel import SaveOnEpochEndCallback
 from ..callbacks.skiptrain import SkipTrainCallback
@@ -29,6 +32,10 @@ class Runner(BaseRunner):
     '''
     The learner class
     '''
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.fit = super().fit
+
     @property
     def device(self):
         '''
@@ -52,7 +59,25 @@ class Runner(BaseRunner):
         '''
         Build a runner using standard callbacks
         '''
-        return cls(model, data, loss_func, optim, cbs=STANDARD_CALLBACK_LIST)
+        return cls(model=model,
+                   data=data,
+                   loss_func=loss_func,
+                   optim=optim,
+                   cbs=STANDARD_CALLBACK_LIST)
+
+    def distribute_learner(self, device_ids):
+        n_gpus = len(device_ids)
+        self.fit = partial(self._launch_trainers, n_gpus=n_gpus)
+
+    def _launch_trainers(self, n_gpus, n_epochs, additional_cbs):
+        mp.spawn(self._multprocess_fit,
+                 args=(n_epochs, additional_cbs, ),
+                 nprocs=n_gpus,
+                 join=True)
+
+    def _multprocess_fit(self, gpu, n_epochs, additional_cbs):
+        self.device = gpu
+        super().fit(n_epochs, additional_cbs=additional_cbs)
 
     def lr_find(self, skip_last=5):
         '''
@@ -62,59 +87,35 @@ class Runner(BaseRunner):
         getattr(self, 'recorder', None).plot_lr_find(skip_last=skip_last)
         self.remove_callback('lr_finder')
 
-    def fit_one_cycle(self, n_epochs, max_lr, divs=None, sched_mom=True, min_mom=0.85, supress_progress=False):
+    def fit_one_cycle(self, n_epochs, max_lr, supress_progress=False, **kwargs):
         '''
         One cycle fitting using cosine scheduling.
         '''
-        divs = [0.3, 0.7] if not divs else divs
-        lrs = self.lr
-        if not isinstance(max_lr, list):
-            max_lr = [max_lr] * self.n_param_groups
-        assert len(max_lr) == self.n_param_groups
-        sched_funcs = []
-        for base_lr, m_lr in zip(lrs, max_lr):
-            func = combine_scheds(divs, [sched_cos(base_lr, m_lr), sched_cos(m_lr, base_lr*1e-1)])
-            sched_funcs.append(func)
 
-        lr_scheduler = ParamScheduler(pname='lr', sched_func=sched_funcs)
+        lr_scheduler, mom_sched = one_cycle_scheduler(lrs=self.lr,
+                                                      n_param_groups=self.n_param_groups,
+                                                      max_lr=max_lr, **kwargs)
         self.remove_callback('paramscheduler_lr')
+        self.remove_callback('paramscheduler_momentum')
         self.add_callback(lr_scheduler)
-        #momentum scheduling
-
-        if sched_mom:
-            sched_funcs = list()
-            base_moms = [param['momentum'] for param in self.optim.param_groups]
-            for mom in base_moms:
-                func = combine_scheds(divs, [sched_cos(mom, min_mom), sched_cos(min_mom, mom)])
-                sched_funcs.append(func)
-
-            mom_scheduler = ParamScheduler(pname='momentum', sched_func=sched_funcs)
-            self.remove_callback('paramscheduler_momentum')
-            self.add_callback(mom_scheduler)
+        self.add_callback(mom_sched)
 
         if supress_progress:
             self.remove_callback('progressbar')
+        self.fit(epochs=n_epochs)
 
-        super().fit(epochs=n_epochs)
-        self.remove_callback('paramscheduler_lr')
-        if sched_mom:
-            self.remove_callback('paramscheduler_mom')
 
     def fit_exp(self, n_epochs, gamma=0.9, supress_progress=False):
         '''
         Fits on exponencial learning rate
         '''
-        lrs = self.lr
-        sched_funcs = []
-        for lr in lrs:
-            sched_funcs.append(sched_exp(lr, lr*(gamma**n_epochs)))
-        self.remove_callback('paramscheduler_lr')
 
         if supress_progress:
             self.remove_callback('progressbar')
-        super().fit(epochs=n_epochs,
-                    additional_cbs=ParamScheduler(pname='lr', sched_func=sched_funcs))
+
         self.remove_callback('paramscheduler_lr')
+        sched = exp_scheduler(lrs=self.lr, gamma=gamma, n_epochs=n_epochs)
+        self.fit(epochs=n_epochs, additional_cbs=sched)
 
     def add_softmax_metrics(self):
         '''
