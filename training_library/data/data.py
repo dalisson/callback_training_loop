@@ -12,7 +12,8 @@ class Data(object):
     def __init__(self, dataloaders, n_classes=None, data_type='img'):
         self.train_dl, self.valid_dl = dataloaders
         self.n_classes = n_classes
-        self.data_type = data_type   
+        self.data_type = data_type  
+        self.bs = None 
 
     @classmethod
     def from_audio_images(cls, train_dir, test_dir, b_size, data_aug=True, drop_last=False):
@@ -24,6 +25,7 @@ class Data(object):
                                                      batch_size=b_size,
                                                      data_augmentation=data_aug,
                                                      drop_last=drop_last)
+        self.bs = b_size
 
         classes = getattr(dataloaders[0], 'idx_to_class', None)
         if classes:
