@@ -67,20 +67,11 @@ class Runner(BaseRunner):
                    cbs=STANDARD_CALLBACK_LIST)
 
     def distribute_learner(self, device_ids):
-        n_gpus = len(device_ids)
-        parallel_cb = ParallelTrainerCallback(n_devices=n_gpus)
+        '''
+        Distributes the learner among gpus
+        '''
+        parallel_cb = ParallelTrainerCallback(device_ids=device_ids)
         self.add_callback(parallel_cb)
-        self.fit = partial(self._launch_trainers, n_gpus=n_gpus)
-
-    def _launch_trainers(self, n_gpus, epochs, additional_cbs=None):
-        mp.spawn(self._multprocess_fit,
-                 args=(epochs, additional_cbs, ),
-                 nprocs=n_gpus,
-                 join=True)
-
-    def _multprocess_fit(self, gpu, epochs, additional_cbs):
-        self.device = gpu
-        super().fit(epochs, additional_cbs=additional_cbs)
 
     def lr_find(self, skip_last=5):
         '''
