@@ -10,7 +10,7 @@ class ParallelTrainerCallback(Callback):
         super(ParallelTrainerCallback, self).__init__()
         self.device_ids = device_ids
 
-    def begin_fit(self):
+    def before_fit(self):
         self.run.model = DataParallel(self.run.model, device_ids=self.device_ids)
 
     def after_fit(self):

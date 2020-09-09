@@ -119,6 +119,7 @@ class BaseRunner():
         '''
         Does the fitting process
         '''
+        self('before_fit')
         if additional_cbs:
             self.add_callback(additional_cbs)
         try:

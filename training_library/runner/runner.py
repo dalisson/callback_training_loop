@@ -70,6 +70,7 @@ class Runner(BaseRunner):
         '''
         Distributes the learner among gpus
         '''
+        self.device = device_ids[0]
         parallel_cb = ParallelTrainerCallback(device_ids=device_ids)
         self.add_callback(parallel_cb)
 
