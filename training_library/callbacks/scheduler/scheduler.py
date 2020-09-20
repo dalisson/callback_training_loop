@@ -97,5 +97,5 @@ def exp_scheduler(lrs, gamma, n_epochs):
     sched_funcs = []
     for lr in lrs:
         sched_funcs.append(sched_exp(lr, lr*(gamma**n_epochs)))
-    ParamScheduler(pname='lr', sched_func=sched_funcs)
-    return ParamScheduler
+    sched = ParamScheduler(pname='lr', sched_func=sched_funcs)
+    return sched
