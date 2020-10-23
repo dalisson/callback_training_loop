@@ -3,3 +3,6 @@ librosa==0.8.0
 fastprogress==1.0.0
 logmmse
 scipy
+torchaudio
+matplotlib
+pydub
