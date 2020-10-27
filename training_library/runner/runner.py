@@ -12,9 +12,10 @@ from ..callbacks.recorder import RecorderCallback
 from ..callbacks.scheduler import one_cycle_scheduler, exp_scheduler
 from ..callbacks.progress import ProgressbarCallback
 from ..callbacks.savemodel import SaveOnEpochEndCallback
-from ..callbacks.skiptrain import SkipTrainCallback
+from ..callbacks.skipeval import SkipEvalCallback
 from ..callbacks.wandbcallback import WandbCallback
 from ..callbacks.savemetricscallback import SaveMetricsCallback
+from ..callbacks.failonnan import FailOnNanCallback
 
 from .base import BaseRunner
 
@@ -27,7 +28,7 @@ if importlib.util.find_spec('apex'):
 
 __all__ = ['Runner']
 
-STANDARD_CALLBACK_LIST = [CudaCallback(), RecorderCallback(), ProgressbarCallback()]
+STANDARD_CALLBACK_LIST = [CudaCallback(), RecorderCallback(), ProgressbarCallback(), FailOnNanCallback()]
 
 class Runner(BaseRunner):
     '''
@@ -135,11 +136,11 @@ class Runner(BaseRunner):
         '''
         self.add_callback(SaveOnEpochEndCallback(optimizer=optimizer))
 
-    def eval(self):
+    def no_eval(self):
         '''
         Run the model through one epoch in the eval dataset
         '''
-        self.add_callback([SkipTrainCallback()])
+        self.add_callback([SkipEvalCallback()])
         self.fit(1)
         self.remove_callback('skiptrain')
 
