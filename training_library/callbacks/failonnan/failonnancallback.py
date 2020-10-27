@@ -9,5 +9,6 @@ class FailOnNanCallback(Callback):
     order = 0
     def after_loss(self):
         if torch.isnan(self.run.loss):
+            self.run.reason = "LOSS IS NAN"
             raise CancelTrainException
 
