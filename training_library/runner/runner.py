@@ -141,8 +141,6 @@ class Runner(BaseRunner):
         Run the model through one epoch in the eval dataset
         '''
         self.add_callback([SkipEvalCallback()])
-        self.fit(1)
-        self.remove_callback('skiptrain')
 
     def half(self, loss_scale=512, dynamic=True, flat_master=False, **kwargs):
         '''
