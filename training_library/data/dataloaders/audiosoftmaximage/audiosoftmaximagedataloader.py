@@ -1,6 +1,7 @@
 import torch 
 import numpy as np
-
+import random
+from torch.utils.data.sampler import Sampler
 from torchvision import datasets, transforms
 from .audiospectrogram import get_fft_spectrum_from_array, get_fft_spectrum_from_file, load_wav, build_buckets
 
@@ -22,7 +23,25 @@ def load_images_softmax(x, load_from_wav=False, gain_augmentation=False):
 
     return np.expand_dims(img, 0)
 
-def build_dataloaders(train_dir, test_dir, batch_size, data_augmentation=True, drop_last=False):
+
+class RandomSampler(Sampler):
+  def __init__(self, data_source, seed=42):
+    self.data_source = data_source
+    self.seed = seed
+    n = len(self.data_source)
+    self.indexes = list(range(n))
+    random.Random(self.seed).shuffle(self.indexes)
+    
+  def set_seed(self):
+    self.seed = 42
+
+  def __iter__(self):
+    return iter(self.indexes)
+
+  def __len__(self):
+    return len(self.data_source)
+
+def build_dataloaders(train_dir, test_dir, batch_size, data_augmentation=True, drop_last=False, *args, **kwargs):
     if data_augmentation:
         softmax_transforms_train = transforms.Compose([
                 random_inversion, 
@@ -49,16 +68,20 @@ def build_dataloaders(train_dir, test_dir, batch_size, data_augmentation=True, d
                 normalize,
                 transforms.ToTensor(),
                 ])
-
+    try:
+        seed = kwargs['seed']
+    except:
+        seed = random.randint(1, 99)
     train_softmax_dataset = datasets.DatasetFolder(train_dir,
                                                    transform=softmax_transforms_train,
                                                    loader=load_images_softmax,
                                                    extensions=(".npy",))
-
+    torch.manual_seed(seed)
+    s = RandomSampler(train_softmax_dataset, seed)
     train_softmax_loader = torch.utils.data.DataLoader(train_softmax_dataset,
                                                        batch_size=batch_size,
-                                                       shuffle=True,
-                                                       drop_last=drop_last)
+                                                       drop_last=drop_last,
+                                                       sampler=s)
 
     test_softmax_dataset = datasets.DatasetFolder(test_dir,
                                                   transform=softmax_transforms_test,
