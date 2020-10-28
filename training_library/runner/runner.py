@@ -67,7 +67,7 @@ class Runner(BaseRunner):
                    optim=optim,
                    cbs=STANDARD_CALLBACK_LIST)
 
-    def distribute_learner(self, device_ids):
+    def distribute_runner(self, device_ids):
         '''
         Distributes the learner among gpus
         '''
