@@ -28,17 +28,19 @@ class RandomSampler(Sampler):
   def __init__(self, data_source, seed=42):
     self.data_source = data_source
     self.seed = seed
-    n = len(self.data_source)
-    self.indexes = list(range(n))
-    random.Random(self.seed).shuffle(self.indexes)
+    
     
   def set_seed(self):
     self.seed = 42
 
   def __iter__(self):
+    n = len(self.data_source)
+    self.indexes = list(range(n))
+    random.Random(self.seed).shuffle(self.indexes)
+    self.seed += 1
     return iter(self.indexes)
 
-  def __len__(self):
+  def __len__(self):  
     return len(self.data_source)
 
 def build_dataloaders(train_dir, test_dir, batch_size, data_augmentation=True, drop_last=False, *args, **kwargs):
