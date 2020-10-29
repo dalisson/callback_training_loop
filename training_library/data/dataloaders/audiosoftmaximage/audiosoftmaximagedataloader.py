@@ -73,7 +73,7 @@ def build_dataloaders(train_dir, test_dir, batch_size, data_augmentation=True, d
     try:
         seed = kwargs['seed']
     except:
-        seed = random.randint(1, 99)
+        seed = random.randint(1, 2009)
     train_softmax_dataset = datasets.DatasetFolder(train_dir,
                                                    transform=softmax_transforms_train,
                                                    loader=load_images_softmax,
