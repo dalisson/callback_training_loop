@@ -6,3 +6,4 @@ scipy
 torchaudio
 matplotlib
 pydub
+wandb
