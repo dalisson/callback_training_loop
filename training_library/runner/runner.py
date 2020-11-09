@@ -71,6 +71,7 @@ class Runner(BaseRunner):
         '''
         Distributes the learner among gpus
         '''
+        self.remove_callback('paralleltrainer')
         self.device = device_ids[0]
         parallel_cb = ParallelTrainerCallback(device_ids=device_ids)
         self.add_callback(parallel_cb)
@@ -140,6 +141,7 @@ class Runner(BaseRunner):
         '''
         Run the model through one epoch in the eval dataset
         '''
+        self.remove_callback('skipeval')
         self.add_callback([SkipEvalCallback()])
 
     def half(self, loss_scale=512, dynamic=True, flat_master=False, **kwargs):
