@@ -80,6 +80,10 @@ def build_dataloaders(train_dir, test_dir, batch_size, data_augmentation=True, d
                                                    extensions=(".npy",))
     torch.manual_seed(seed)
     s = RandomSampler(train_softmax_dataset, seed)
+    if drop_last == False:
+        if len(train_softmax_dataset) % batch_size == 1:
+            print('last batch will be sized 1, changing drop_last to true')
+            drop_last = True 
     train_softmax_loader = torch.utils.data.DataLoader(train_softmax_dataset,
                                                        batch_size=batch_size,
                                                        drop_last=drop_last,
