@@ -199,8 +199,7 @@ class BaseRunner():
             state_dict['model_state_dict'] = self.model.state_dict()
             state_dict['optimizer_state_dict'] = self.optim.state_dict()
             torch.save(state_dict, name)
-            if sched_states:
-                state_dict['sched_states'] = sched_states
+            state_dict['sched_states'] = sched_states
             return
 
         torch.save(self.model.state_dict(), name)

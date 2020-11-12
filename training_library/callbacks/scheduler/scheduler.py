@@ -26,8 +26,8 @@ class ParamScheduler(Callback):
             self.sched_func = [self.sched_func] * self.run.n_param_groups
         assert self.run.n_param_groups == len(self.sched_func)
         self.train_iter = len(self.data.train_dl)  * self.epochs
-        for scheds in self.run.scheduler_states.keys():
-            if self.name == scheds:
+        for sched_name in self.run.scheduler_states.keys():
+            if self.name == sched_name:
                 self.set_state(self.run.scheduler_states[self.name])
                 break
 
