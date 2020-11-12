@@ -187,9 +187,7 @@ class BaseRunner():
             if 'paramscheduler' in cb.name:
                 sched_states[cb.name] = cb.get_state()
                 sched_states['train_iter'] = cb.train_iter
-        c_iter = self.iter if sched_states else 0
-        sched_states['run_iter'] = c_iter
-        sched_states['total_iter'] = self.total_iter
+        sched_states['run_iter'] = self.iter
         if name is None:
             name = 'model_e%s.' % self.epoch
             for metric in self.metrics['eval'].keys():
