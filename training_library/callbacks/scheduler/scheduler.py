@@ -48,9 +48,7 @@ class ParamScheduler(Callback):
         parameters = []
         for pg in self.optim.param_groups:
             parameters.append(pg[self.pname])
-        
-        p_dict = {'pname' : self.pname, 'parameters' : parameters}
-        return p_dict
+        return parameters
 
     def set_state(self, parameters):
         for pg, p_val in zip(self.optim.param_groups, parameters):
