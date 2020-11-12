@@ -4,6 +4,7 @@ Scheduler for parameters such as the learning rate
 
 import torch
 import math
+import numpy as np
 from functools import partial
 
 from ..callback import Callback
@@ -25,6 +26,9 @@ class ParamScheduler(Callback):
             self.sched_func = [self.sched_func] * self.run.n_param_groups
         assert self.run.n_param_groups == len(self.sched_func)
         self.train_iter = len(self.data.train_dl)  * self.epochs
+        for scheds in self.run.scheduler_states.keys():
+            if self.name == scheds:
+                    self.set_state(self.run.scheduler_states[self.name])
 
     def set_param(self):
         '''
@@ -39,6 +43,20 @@ class ParamScheduler(Callback):
         '''
         if self.in_train:
             self.set_param()
+
+    def get_state(self):
+        parameters = []
+        for pg in self.optim.param_groups:
+            parameters.append(pg[self.pname])
+        
+        p_dict = {'pname' : self.pname, 'parameters' : parameters}
+        return p_dict
+
+    def set_state(self, parameters):
+        for pg, p_val in zip(self.optim.param_groups, parameters):
+            pg[self.pname] = p_val
+        
+
     @property
     def name(self):
         base_name = super().name

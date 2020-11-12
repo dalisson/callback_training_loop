@@ -35,6 +35,7 @@ class BaseRunner():
         self.total_iter = 0
         self.in_train = True
         self.current_stage = self.stages[0]
+        self.scheduler_states = {}
         self('init_config')
 
     def add_callback(self, call_backs):
@@ -181,6 +182,12 @@ class BaseRunner():
             name: str - name of the model
             optimizer: bool - when true saves the optimizer state dict
         '''
+        sched_states = {}
+        for cb in self.callbacks:
+            if 'paramscheduler' in cb.name:
+                sched_states.append({cb.name : cb.get_state()})
+        c_iter = self.iter if sched_states else 0
+        sched_states['run_iter'] = c_iter
         if name is None:
             name = 'model_e%s.' % self.epoch
             for metric in self.metrics['eval'].keys():
@@ -192,6 +199,8 @@ class BaseRunner():
             state_dict['model_state_dict'] = self.model.state_dict()
             state_dict['optimizer_state_dict'] = self.optim.state_dict()
             torch.save(state_dict, name)
+            if sched_states:
+                state_dict['sched_states'] = sched_states
             return
 
         torch.save(self.model.state_dict(), name)
@@ -202,10 +211,12 @@ class BaseRunner():
             name: Union[str, path] - model location
             optimizer: bool - is optimizer state to be loaded from file
         '''
-        checkpoint = torch.load(model)
+        checkpoint = torch.load(model, map_location='cpu')
         if optimizer:
             self.model.load_state_dict(checkpoint['model_state_dict'])
             self.optim.load_state_dict(checkpoint['optimizer_state_dict'])
+            self.scheduler_states =  checkpoint['sched_states']
+            self.iter = self.scheduler_states['run_iter']
             return
         self.model.load_state_dict(checkpoint)
 
