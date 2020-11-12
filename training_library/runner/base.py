@@ -198,8 +198,8 @@ class BaseRunner():
             state_dict = dict()
             state_dict['model_state_dict'] = self.model.state_dict()
             state_dict['optimizer_state_dict'] = self.optim.state_dict()
-            torch.save(state_dict, name)
             state_dict['sched_states'] = sched_states
+            torch.save(state_dict, name)
             return
 
         torch.save(self.model.state_dict(), name)
