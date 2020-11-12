@@ -185,7 +185,7 @@ class BaseRunner():
         sched_states = {}
         for cb in self.callbacks:
             if 'paramscheduler' in cb.name:
-                sched_states.append({cb.name : cb.get_state()})
+                sched_states[cb.name] = cb.get_state()
         c_iter = self.iter if sched_states else 0
         sched_states['run_iter'] = c_iter
         if name is None:
