@@ -16,7 +16,7 @@ class Data(object):
         self.bs = bs
 
     @classmethod
-    def from_audio_images(cls, train_dir, test_dir, b_size, data_aug=True, drop_last=False):
+    def from_audio_images(cls, train_dir, test_dir, b_size, data_aug=True, drop_last=False, **kwargs):
         '''
         Builds Data class for audio images to be used with Softmax
         '''
@@ -24,7 +24,8 @@ class Data(object):
                                                      test_dir=test_dir,
                                                      batch_size=b_size,
                                                      data_augmentation=data_aug,
-                                                     drop_last=drop_last)
+                                                     drop_last=drop_last,
+                                                     **kwargs)
     
 
         classes = getattr(dataloaders[0], 'idx_to_class', None)
