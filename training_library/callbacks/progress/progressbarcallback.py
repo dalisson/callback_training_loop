@@ -11,9 +11,11 @@ class ProgressbarCallback(Callback):
         self.mbar.on_iter_begin()
         self.run.logger = partial(self.mbar.write, table=True)
         self.iter_in_dl = 0
+        self.epoch = 0
 
     def begin_epoch(self): 
         self.iter_in_dl = 0
+        self.epoch += 1
         self.set_pb()
         self.pb.update(self.iter_in_dl)
 
@@ -33,7 +35,7 @@ class ProgressbarCallback(Callback):
         if self.run.training_canceled:
             self.mbar.write('Training cancelled at epoch %s - iter %s' % (self.run.epoch, self.run.iter))
             return True
-        stats = 'Epoch {} - '.format(self.run.epoch)
+        stats = 'Epoch {} - '.format(self.epoch)
         stats += self.stage + ': '
         for k in self.run.metrics[self.stage].keys():
             if self.metrics[self.stage][k]:
