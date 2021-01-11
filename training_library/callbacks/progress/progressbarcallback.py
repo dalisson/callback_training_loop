@@ -14,10 +14,10 @@ class ProgressbarCallback(Callback):
         self.iter_in_dl = 0
 
     def begin_epoch(self):
-        self.epoch += 1
         self.iter_in_dl = 0
         self.set_pb()
         self.pb.update(self.iter_in_dl)
+        self.epoch += 1
 
     def after_loss(self):
         self.mbar.child.comment = 'Loss: {:.3f}'.format(self.recorder.records['loss'][-1])
