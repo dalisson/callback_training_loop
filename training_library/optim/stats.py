@@ -25,9 +25,9 @@ class AverageGradStat(Stat):
         self.dampening = dampening
     def init_state(self, p):
         return {'grad_avg' : torch.zeros_like(p.grad.data)}
-    def update(self, p, state, mom=0.9, **kwargs):
-        state['mom_damp'] = 1-mom if self.dampening else 1
-        state['grad_avg'].mul_(mom).add_(p.grad.data, alpha=state['mom_damp'])
+    def update(self, p, state, momentum=0.9, **kwargs):
+        state['mom_damp'] = 1-momentum if self.dampening else 1
+        state['grad_avg'].mul_(momentum).add_(p.grad.data, alpha=state['mom_damp'])
         return state
 
 class AverageSqrGradStat(Stat):

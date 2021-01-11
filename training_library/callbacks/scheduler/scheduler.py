@@ -108,7 +108,6 @@ def one_cycle_scheduler(lrs, n_param_groups, max_lr, min_mom=0.85, mom=0.95, div
         sched_funcs.append(func)
 
     mom_scheduler = ParamScheduler(pname='momentum', sched_func=sched_funcs)
-
     return lr_scheduler, mom_scheduler
 
 def exp_scheduler(lrs, gamma, n_epochs):

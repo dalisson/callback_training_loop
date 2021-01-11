@@ -35,12 +35,12 @@ def set_lr_for_groups(optim, lrs):
     for group, lr in zip(optim.param_groups, lrs):
         group['lr'] = lr
 
-def sgd(parameters, lr, mom=0, weight_decay=1e-5):
+def sgd(parameters, lr, momentum=0, weight_decay=1e-5):
     '''
     Builds a sgd optimizer
     '''
 
-    return set_optim(parameters, 'sgd', lr=lr, mom=mom, wd=weight_decay)
+    return set_optim(parameters, 'sgd', lr=lr, momentum=momentum, wd=weight_decay)
 
 
 def adam(parameters, lr, betas: tuple = (9e-1, 99e-2), weight_decay=1e-5, eps=1e-6):
@@ -48,7 +48,7 @@ def adam(parameters, lr, betas: tuple = (9e-1, 99e-2), weight_decay=1e-5, eps=1e
     Builds the adam optimizer
     '''
     assert isinstance(betas, (tuple, list)) and len(betas) == 2
-    return set_optim(parameters, 'adam', lr=lr, mom=betas[0],
+    return set_optim(parameters, 'adam', lr=lr, momentum=betas[0],
                      sqr_mom=betas[1], wd=weight_decay, eps=eps)
 
 def lamb(parameters, lr, betas: tuple = (9e-1, 99e-2), weight_decay=1e-5, eps=1e-6):
@@ -56,5 +56,5 @@ def lamb(parameters, lr, betas: tuple = (9e-1, 99e-2), weight_decay=1e-5, eps=1e
     Builds the adam optimizer
     '''
     assert isinstance(betas, (tuple, list)) and len(betas) == 2
-    return set_optim(parameters, 'lamb', lr=lr, mom=betas[0],
+    return set_optim(parameters, 'lamb', lr=lr, momentum=betas[0],
                      sqr_mom=betas[1], wd=weight_decay, eps=eps)

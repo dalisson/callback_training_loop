@@ -25,26 +25,26 @@ def sgd_with_momentum_step(p, lr, grad_avg, **kwargs):
     p.data.add_(grad_avg, alpha=-lr)
     return p
 
-def debias(mom, damp, step):
+def debias(momentum, damp, step):
     '''
     helper function to compute debias
     '''
-    return damp * (1 -mom**step) /(1-mom)
+    return damp * (1 -momentum**step) /(1-momentum)
 
-def adam_step(p, lr, mom, mom_damp, step, sqr_mom, sqr_damp, grad_avg, sqr_avg, eps=1e-6, **kwargs):
+def adam_step(p, lr, momentum, mom_damp, step, sqr_mom, sqr_damp, grad_avg, sqr_avg, eps=1e-6, **kwargs):
     '''
     The adam step
     '''
-    debias1 = debias(mom, mom_damp, step)
+    debias1 = debias(momentum, mom_damp, step)
     debias2 = debias(sqr_mom, sqr_damp, step)
     p.data.addcdiv_(-lr/debias1, grad_avg, (sqr_avg/debias2).sqrt() + eps)
     return p
 
-def lamb_step(p, lr, mom, mom_damp, step, sqr_mom, sqr_damp, grad_avg, sqr_avg, eps=1e-6, wd=0, **kwargs):
+def lamb_step(p, lr, momentum, mom_damp, step, sqr_mom, sqr_damp, grad_avg, sqr_avg, eps=1e-6, wd=0, **kwargs):
     '''
     The lamb optimizer step, it has weight decay
     '''
-    debias1 = debias(mom,     mom_damp, step)
+    debias1 = debias(momentum,     mom_damp, step)
     debias2 = debias(sqr_mom, sqr_damp, step)
     r1 = p.data.pow(2).mean().sqrt()
     step = (grad_avg/debias1) / ((sqr_avg/debias2).sqrt()+eps) + wd*p.data
