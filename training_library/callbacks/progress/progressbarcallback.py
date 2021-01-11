@@ -11,7 +11,7 @@ class ProgressbarCallback(Callback):
         self.mbar.on_iter_begin()
         self.run.logger = partial(self.mbar.write, table=True)
         self.iter_in_dl = 0
-        self.epoch = 0
+        #self.epoch = 0
 
     def begin_epoch(self): 
         self.iter_in_dl = 0
