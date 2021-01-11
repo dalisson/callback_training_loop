@@ -7,12 +7,14 @@ from ..imports import partial
 class ProgressbarCallback(Callback):
     order=20
     def begin_fit(self):
+        self.epoch = 0
         self.mbar = master_bar(range(self.epochs))
         self.mbar.on_iter_begin()
         self.run.logger = partial(self.mbar.write, table=True)
         self.iter_in_dl = 0
 
-    def begin_epoch(self): 
+    def begin_epoch(self):
+        self.epoch += 1
         self.iter_in_dl = 0
         self.set_pb()
         self.pb.update(self.iter_in_dl)
@@ -31,9 +33,9 @@ class ProgressbarCallback(Callback):
 
     def after_all_batches(self):
         if self.run.training_canceled:
-            self.mbar.write('Training cancelled at epoch %s - iter %s' % (self.run.epoch, self.run.iter))
+            self.mbar.write('Training cancelled at epoch %s - iter %s' % (self.epoch, self.run.iter))
             return True
-        stats = 'Epoch {} - '.format(self.run.epoch)
+        stats = 'Epoch {} - '.format(self.epoch)
         stats += self.stage + ': '
         for k in self.run.metrics[self.stage].keys():
             if self.metrics[self.stage][k]:
