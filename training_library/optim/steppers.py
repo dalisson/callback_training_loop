@@ -22,7 +22,7 @@ def sgd_with_momentum_step(p, lr, grad_avg, **kwargs):
     '''
     Sgd with momemtum step
     '''
-    p.data.add_(-lr, grad_avg)
+    p.data.add_(grad_avg, alpha=-lr)
     return p
 
 def debias(mom, damp, step):
