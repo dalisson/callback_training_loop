@@ -88,7 +88,7 @@ def combine_scheds(pcts, scheds):
 
 
 
-def one_cycle_scheduler(lrs, n_param_groups, max_lr, min_mom=0.85, mom=0.95, sched_mom=True, divs=None):
+def one_cycle_scheduler(lrs, n_param_groups, max_lr, min_mom=0.85, mom=0.95, divs=None):
     divs = [0.3, 0.7] if not divs else divs
     if not isinstance(max_lr, list):
         max_lr = [max_lr] * n_param_groups
@@ -100,14 +100,14 @@ def one_cycle_scheduler(lrs, n_param_groups, max_lr, min_mom=0.85, mom=0.95, sch
     lr_scheduler = ParamScheduler(pname='lr', sched_func=sched_funcs)
 
     #momentum scheduling
-    if sched_mom:
-        sched_funcs = list()
-        base_moms = [mom]* n_param_groups
-        for mom in base_moms:
-            func = combine_scheds(divs, [sched_cos(mom, min_mom), sched_cos(min_mom, mom)])
-            sched_funcs.append(func)
+    
+    sched_funcs = list()
+    base_moms = [mom]* n_param_groups
+    for mom in base_moms:
+        func = combine_scheds(divs, [sched_cos(mom, min_mom), sched_cos(min_mom, mom)])
+        sched_funcs.append(func)
 
-        mom_scheduler = ParamScheduler(pname='momentum', sched_func=sched_funcs)
+    mom_scheduler = ParamScheduler(pname='momentum', sched_func=sched_funcs)
 
     return lr_scheduler, mom_scheduler
 
