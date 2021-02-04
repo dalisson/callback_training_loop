@@ -7,3 +7,4 @@ torchaudio
 matplotlib
 pydub
 wandb
+pytorch_metric_learning
