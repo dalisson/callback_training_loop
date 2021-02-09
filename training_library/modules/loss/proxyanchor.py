@@ -39,7 +39,7 @@ class ProxyAnchor(torch.nn.Module):
     def forward(self, X, T):
         P = self.proxies
 
-        cos = F.linear(l2_norm(X), l2_norm(P))  # Calcluate cosine similarity
+        cos = F.linear(l2_norm(X), l2_norm(P))  # Calculate cosine similarity
         P_one_hot = binarize(T = T, nb_classes = self.nb_classes, device=self.device)
         N_one_hot = 1 - P_one_hot
     

@@ -13,6 +13,7 @@ from ..callbacks.scheduler import one_cycle_scheduler, exp_scheduler
 from ..callbacks.progress import ProgressbarCallback
 from ..callbacks.savemodel import SaveOnEpochEndCallback
 from ..callbacks.skipeval import SkipEvalCallback
+from ..callbacks.skiptrain import SkipTrainCallback
 from ..callbacks.wandbcallback import WandbCallback
 from ..callbacks.savemetricscallback import SaveMetricsCallback
 from ..callbacks.failonnan import FailOnNanCallback
@@ -144,6 +145,14 @@ class Runner(BaseRunner):
         '''
         self.remove_callback('skipeval')
         self.add_callback([SkipEvalCallback()])
+    
+    def eval(self):
+        '''
+        eval only
+        '''
+        self.remove_callback('skiptrain')
+        self.add_callback([SkipTrainCallback()])
+
 
     def half(self, loss_scale=512, dynamic=True, flat_master=False, **kwargs):
         '''
