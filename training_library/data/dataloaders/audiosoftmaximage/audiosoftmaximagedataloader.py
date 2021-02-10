@@ -62,12 +62,14 @@ def build_dataloaders(train_dir, test_dir, batch_size, data_augmentation=True, d
                 ])
     else:
         softmax_transforms_train = transforms.Compose([
-                normalize,
+                #normalize,
+                channels_last,
                 transforms.ToTensor(),
                 ])
 
         softmax_transforms_test = transforms.Compose([
-                normalize,
+                #normalize,
+                channels_last,
                 transforms.ToTensor(),
                 ])
     try:
