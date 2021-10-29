@@ -1,0 +1,58 @@
+wandb_version: 1
+
+R:
+  desc: null
+  value: 6
+_wandb:
+  desc: null
+  value:
+    cli_version: 0.12.4
+    framework: ignite
+    is_jupyter_run: false
+    is_kaggle_kernel: false
+    python_version: 3.9.7
+    start_time: 1634670782
+    t:
+      1:
+      - 1
+      - 5
+      - 10
+      2:
+      - 1
+      - 5
+      - 10
+      3:
+      - 1
+      - 13
+      - 19
+      4: 3.9.7
+      5: 0.12.4
+      8:
+      - 5
+bs:
+  desc: null
+  value: 1
+dataset:
+  desc: null
+  value: voxceleb1 mixture + WHAMR
+dataset_version:
+  desc: null
+  value: 1
+device:
+  desc: null
+  value: 0
+epochs:
+  desc: null
+  value: 6
+eval_size:
+  desc: null
+  value: 4000
+optimizer:
+  desc: null
+  value: adam_torch
+sr:
+  desc: null
+  value: 8000
+train_size:
+  desc: null
+  value: 36000

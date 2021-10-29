@@ -1,0 +1,10 @@
+pytorch-ignite==0.4.2
+librosa==0.8.0
+fastprogress==1.0.0
+logmmse
+scipy
+torchaudio
+matplotlib
+pydub
+wandb
+pytorch_metric_learning

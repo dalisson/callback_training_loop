@@ -1,0 +1,24 @@
+{
+    "os": "Linux-5.11.0-37-generic-x86_64-with-glibc2.31",
+    "python": "3.9.7",
+    "heartbeatAt": "2021-10-19T19:13:03.853619",
+    "startedAt": "2021-10-19T19:13:02.854468",
+    "docker": null,
+    "gpu": "GeForce RTX 2070 SUPER",
+    "gpu_count": 2,
+    "cpu_count": 8,
+    "cuda": null,
+    "args": [],
+    "state": "running",
+    "program": "/home/dalisson/repos/deep_learning/train_script.py",
+    "codePath": "train_script.py",
+    "git": {
+        "remote": "git@github.com:dalisson/callback_training_loop.git",
+        "commit": "a3e6a33e822216105770715e020112dca8e45252"
+    },
+    "email": null,
+    "root": "/home/dalisson/repos/deep_learning",
+    "host": "hulk-Z390-M-GAMING",
+    "username": "dalisson",
+    "executable": "/home/hulk/miniconda3/envs/speaker_separation/bin/python"
+}
