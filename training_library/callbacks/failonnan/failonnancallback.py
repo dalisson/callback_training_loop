@@ -12,4 +12,3 @@ class FailOnNanCallback(Callback):
             self.run.reason = "LOSS IS NAN"
             self.run.iteration = self.run.iter
             raise CancelTrainException
-

@@ -34,8 +34,8 @@ def train():
                                            loss_func, optimizer)
 
     # pytorch scheduler
-    scheduler = StepLR(optimizer, 200, 0.98)
-    runner.custom_scheduler(scheduler, every_iter=True)
+    scheduler = StepLR(optimizer, 2, 0.98)
+    runner.custom_scheduler(scheduler, every_iter=False)
     runner.remove_callback('standardsplitter')
     runner.add_callback([SWaveSpliterCallback(),
                          ClipGradCallback(max_grad=5)])

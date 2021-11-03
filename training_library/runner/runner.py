@@ -7,6 +7,7 @@ from ..callbacks.customscheduler import CustomSchedulerCallback
 from ..callbacks.dataparallel import ParallelTrainerCallback
 from ..callbacks.exceptions import DeviceException
 from ..callbacks.failonnan import FailOnNanCallback
+from ..callbacks.loggercallback import LoggerCallback
 from ..callbacks.lrfinder import LR_Finder
 from ..callbacks.metrics import IgniteCallback
 from ..callbacks.metrics import LossMetricCallback
@@ -33,7 +34,8 @@ STANDARD_CALLBACK_LIST = [CudaCallback(),
                           ProgressbarCallback(),
                           FailOnNanCallback(),
                           StandardSplitterCallback(),
-                          LossMetricCallback()]
+                          LossMetricCallback(),
+                          LoggerCallback()]
 
 
 class Runner(BaseRunner):
@@ -192,3 +194,7 @@ class Runner(BaseRunner):
         '''
 
         self.add_callback(CustomSchedulerCallback(scheduler, every_iter))
+
+    def log_events(self, file_name):
+
+        self.add_callback(LoggerCallback(file_name))
