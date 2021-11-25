@@ -28,8 +28,7 @@ class RandomSampler(Sampler):
   def __init__(self, data_source, seed=42):
     self.data_source = data_source
     self.seed = seed
-    
-    
+
   def set_seed(self):
     self.seed = 42
 

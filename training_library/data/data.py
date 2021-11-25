@@ -3,6 +3,7 @@ from .dataloaders.audiosoftmaximage import build_softmax_image_dataloader
 from .dataloaders.audiosoftmax import build_audio_dataloaders
 from .dataloaders.swave_dataloder import build_swave_dataloader
 from matplotlib import pyplot as plt
+from pathlib import Path
 import numpy as np
 
 class Data(object):
@@ -118,3 +119,18 @@ class Data(object):
                 transposed = np.squeeze(transposed, axis=-1)
             ax.imshow(transposed)
             ax.set_title(s_y.detach().cpu().numpy())
+    
+    def append_data(self, folder, f_type='.npy'):
+        dataset = self.train_dl.dataset
+        fo = Path(folder)
+        new_files = []
+        for f in fo.iterdir():
+            for item in f.iterdir():
+                if item.name.endswith(f_type):
+                    new_files.append(str(item.resolve()))
+        new_file_classes = [(lambda x: x.split('/')[-2])(x) for x in new_files]
+        new_file_idx = [dataset.class_to_idx[x] for x in new_file_classes]
+        assert len(new_file_idx) == len(new_files)
+
+        new_samples = [(x, y) for x, y in zip(new_files, new_file_idx)]
+        dataset.samples.extend(new_samples)
