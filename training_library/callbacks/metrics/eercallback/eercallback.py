@@ -14,8 +14,11 @@ class EERCallback(Callback):
         super(EERCallback, self).__init__()
         self.embeddings = []
         self.labels = []
+
+    def begin_fit(self):
         for stage in self.run.metrics.keys():
             self.run.metrics[stage]["eer"] = []
+
 
     def after_pred(self):
         self.embeddings.append(self.run.y_hat)
