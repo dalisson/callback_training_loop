@@ -11,11 +11,11 @@ from ...callback import Callback
 class EERCallback(Callback):
     order = 9
 
-    def __init__(self, n_batches=100):
+    def __init__(self, batch_limit=100):
         super(EERCallback, self).__init__()
         self.embeddings = []
         self.labels = []
-        self.n_batches = n_batches
+        self.batch_limit = batch_limit
         self.acc = 0
         self.all_eers = []
 
@@ -24,7 +24,7 @@ class EERCallback(Callback):
             self.run.metrics[stage]["eer"] = []
 
     def after_pred(self):
-        if self.acc < self.n_batches:
+        if self.acc < self.batch_limit:
             self.embeddings.append(self.run.y_hat.detach().cpu())
             self.labels.extend(self.run.y_batch.detach().cpu().numpy())
             self.acc += 1
