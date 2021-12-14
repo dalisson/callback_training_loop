@@ -29,26 +29,29 @@ class EERCallback(Callback):
             self.labels.extend(self.run.y_batch.detach().cpu().numpy())
             self.acc += 1
         else:
-            sims = self._calc_cosine_sim()
-            # Broadcast programming
-            self.labels = torch.from_numpy(np.array(self.labels))
-            equal_labels_index = self.labels[None] == self.labels[..., None]
-
-            different_labels_index = (equal_labels_index == False)
-            equal_labels_index = self._apply_mask(equal_labels_index)
-            different_labels_index = self._apply_mask(different_labels_index)
-
-            # similarities for same label
-            equal_sims = sims[equal_labels_index].detach().numpy()
-            # similarities for different label
-            different_sims = sims[different_labels_index].detach().numpy()
-            eer = self._eer(equal_sims, different_sims)
-            self.all_eers.append(eer)
-            self.embeddings, self.labels = [], []
+            self._cal_eer()
 
     def after_all_batches(self):
+        if self.acc > 0:
+            self._cal_eer()
         eer = mean(self.all_eers)
         self.metrics[self.stage]["eer"].append(eer)
+
+    def _cal_eer(self):
+        sims = self._calc_cosine_sim()
+        # Broadcast programming
+        self.labels = torch.from_numpy(np.array(self.labels))
+        equal_labels_index = self.labels[None] == self.labels[..., None]
+        different_labels_index = (equal_labels_index == False)
+        equal_labels_index = self._apply_mask(equal_labels_index)
+        different_labels_index = self._apply_mask(different_labels_index)
+        # similarities for same label
+        equal_sims = sims[equal_labels_index].detach().numpy()
+        # similarities for different label
+        different_sims = sims[different_labels_index].detach().numpy()
+        eer = self._eer(equal_sims, different_sims)
+        self.all_eers.append(eer)
+        self.embeddings, self.labels = [], []
 
     def _calc_cosine_sim(self):
         '''
