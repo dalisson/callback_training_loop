@@ -3,6 +3,7 @@ import numpy as np
 from sklearn.metrics import roc_curve
 from scipy.optimize import brentq
 from scipy.interpolate import interp1d
+from statistics import mean
 
 from ...callback import Callback
 
@@ -10,37 +11,44 @@ from ...callback import Callback
 class EERCallback(Callback):
     order = 9
 
-    def __init__(self):
+    def __init__(self, n_batches=100):
         super(EERCallback, self).__init__()
         self.embeddings = []
         self.labels = []
+        self.n_batches = n_batches
+        self.acc = 0
+        self.all_eers = []
 
     def begin_fit(self):
         for stage in self.run.metrics.keys():
             self.run.metrics[stage]["eer"] = []
 
-
     def after_pred(self):
-        self.embeddings.append(self.run.y_hat)
-        self.labels.extend(self.run.y_batch.detach().numpy())
+        if self.acc < self.n_batches:
+            self.embeddings.append(self.run.y_hat.detach().cpu())
+            self.labels.extend(self.run.y_batch.detach().cpu().numpy())
+            self.acc += 1
+        else:
+            sims = self._calc_cosine_sim()
+            # Broadcast programming
+            self.labels = torch.from_numpy(np.array(self.labels))
+            equal_labels_index = self.labels[None] == self.labels[..., None]
+
+            different_labels_index = (equal_labels_index == False)
+            equal_labels_index = self._apply_mask(equal_labels_index)
+            different_labels_index = self._apply_mask(different_labels_index)
+
+            # similarities for same label
+            equal_sims = sims[equal_labels_index].detach().numpy()
+            # similarities for different label
+            different_sims = sims[different_labels_index].detach().numpy()
+            eer = self._eer(equal_sims, different_sims)
+            self.all_eers.append(eer)
+            self.embeddings, self.labels = [], []
 
     def after_all_batches(self):
-        sims = self._calc_cosine_sim()
-        # Broadcast programming
-        equal_labels_index = self.labels[None] == self.labels[..., None]
-
-        different_labels_index = (equal_labels_index == False)
-        equal_labels_index = self._apply_mask(equal_labels_index)
-        different_labels_index = self._apply_mask(different_labels_index)
-
-        # similarities for same label
-        equal_sims = sims[equal_labels_index].detach().numpy()
-        # similarities for different label
-        different_sims = sims[different_labels_index].detach().numpy()
-        eer = self._eer(equal_sims, different_sims)
+        eer = mean(self.all_eers)
         self.metrics[self.stage]["eer"].append(eer)
-
-        self.embeddings, self.labels = [], []
 
     def _calc_cosine_sim(self):
         '''
@@ -53,7 +61,7 @@ class EERCallback(Callback):
 
         return similarities
 
-    def _apply_mask(indexes):
+    def _apply_mask(self, indexes):
         '''
         Remove duplicate similarities
         '''
@@ -62,7 +70,7 @@ class EERCallback(Callback):
 
         return torch.triu(indexes, diagonal=1)
 
-    def _eer(match_sims, diff_sims):
+    def _eer(self, match_sims, diff_sims):
         '''
         eer calculation
         match_sims : np vector matching similarities
