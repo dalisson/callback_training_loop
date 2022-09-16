@@ -92,7 +92,7 @@ nprirgen==0.0.0
 numba==0.54.0
 numexpr==2.7.3
 numpy==1.19.4
-oauthlib==3.1.1
+oauthlib==3.2.1
 olefile==0.46
 omegaconf==2.1.1
 packaging==21.0
